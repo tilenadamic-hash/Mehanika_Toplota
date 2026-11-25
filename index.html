@@ -91,6 +91,35 @@ table{border-collapse:collapse;margin:8px 0;font-size:.93rem}
 td,th{border:1px solid var(--border);padding:5px 10px;text-align:left}
 th{background:var(--surface2)}
 .tablewrap{overflow-x:auto}
+/* interaktivne vizualizacije (viz.js) */
+.viz{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 18px 16px;margin:18px 0 6px}
+.viz-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.viz-head h4{margin:0;font-size:1.05rem}
+.viz-tag{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:99px;background:var(--ok-soft);color:var(--ok)}
+.viz-note{color:var(--muted);font-size:.9rem;margin:6px 0 10px;max-width:85ch}
+.viz-canvas{background:var(--formula);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.viz-canvas canvas{display:block;width:100%}
+.viz-ctrl{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;margin:12px 0 4px}
+.viz-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;font-size:.92rem}
+.viz-row.sel{grid-template-columns:auto minmax(0,1fr)}
+.viz-row.chk{display:flex;gap:8px;cursor:pointer}
+.viz-row.chk input{width:17px;height:17px;accent-color:var(--accent)}
+.viz-lbl{white-space:nowrap}
+.viz-row input[type=range]{width:100%;min-width:0;accent-color:var(--accent)}
+.viz-val{min-width:72px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.viz-row select{font:inherit;font-size:.9rem;padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);min-width:0}
+.viz-btns{display:flex;gap:8px;align-items:center}
+.viz-out{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:4px 22px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:.9rem}
+.viz-out>div{display:flex;justify-content:space-between;gap:12px}
+.viz-out>div>span{color:var(--muted)}
+.viz-out b{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.viz-out>.wide{grid-column:1/-1}
+.viz-out>.warn{color:var(--warn)}
+.viz-out>.tablewrap{grid-column:1/-1;display:block}
+.viz-tab{width:100%;font-size:.88rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.viz-tab .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}.dot.warn{background:var(--warn)}.dot.accent{background:var(--accent)}
+@media (max-width:900px){.viz{padding:12px 12px 14px}}
 @media (max-width:900px){
   .layout{display:block}
   nav.side{position:sticky;top:0;z-index:5;height:auto;padding:10px 16px;border-right:0;border-bottom:1px solid var(--border);background:var(--bg);display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
@@ -102,7 +131,7 @@ th{background:var(--surface2)}
   .theory{padding:4px 14px 12px}
   html{scroll-padding-top:64px}
 }
-@media print{nav.side{display:none}.layout{display:block}.sol,ol.steps li.hid{display:block!important}.btns,.checks{display:none}}
+@media print{.viz-ctrl{display:none}nav.side{display:none}.layout{display:block}.sol,ol.steps li.hid{display:block!important}.btns,.checks{display:none}}
 </style>
 </head>
 <body>
@@ -122,6 +151,7 @@ th{background:var(--surface2)}
 <div class="hero">
   <h2>Kako uporabljati skripto</h2>
   <p>Vsako poglavje ima kratko <strong>teorijo</strong>, <strong>formule</strong> in <strong>naloge</strong> iz kolokvijev in izpitov 2022–2026 (modra oznaka). Rumeno označene naloge so dodatne vaje za snov, ki je v kolokvijih ni bilo.</p>
+  <p>V vsakem poglavju je tudi <strong>interaktivna vizualizacija</strong> (zelena oznaka): z drsniki spreminjaj količine in opazuj, kako se spremeni gibanje in izračunane vrednosti.</p>
   <p>Najprej nalogo reši sam. Če obstaja polje za rezultat, vpiši številko in klikni <em>Preveri</em> (dovoljeno ~2 % odstopanja). Če se zatakne, odpiraj <em>postopek korak za korakom</em>. <em>Rešitev</em> se pokaže šele, ko klikneš gumb.</p>
   <p>Kjer naloga ne navaja drugače, je \(g = 9{,}81\ \mathrm{m/s^2}\).</p>
   <p><strong>Originali (PDF):</strong>
@@ -147,6 +177,7 @@ th{background:var(--surface2)}
 <div class="tip"><strong>Nasvet:</strong> najprej izberi koordinatni sistem (kje je izhodišče, katera smer je pozitivna). Večina napak pri metih je napak v predznaku \(g\).</div>
 </div>
 
+<div class="viz" data-viz="met"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Enakomerno</b>\(s=vt\)</div>
@@ -296,6 +327,7 @@ th{background:var(--surface2)}
 <h3>Neinercialni opazovalni sistemi</h3>
 <p>Opazovalec v sistemu, ki se giblje s pospeškom \(\vec a_0\), mora dodati <strong>sistemsko silo</strong> \(\vec F_s=-m\vec a_0\). V vrtečem sistemu je to centrifugalna sila \(F_{cf}=m\omega^2r\) (in Coriolisova \(\vec F_{Cor}=-2m\,\vec\omega\times\vec v_r\) za gibajoča se telesa).</p>
 </div>
+<div class="viz" data-viz="klanec"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>2. Newtonov zakon</b>\(\sum\vec F=m\vec a=\dfrac{d\vec G}{dt}\)</div>
@@ -399,6 +431,7 @@ th{background:var(--surface2)}
 \[G\frac{Mm}{r^2}=m\frac{v^2}{r}\ \Rightarrow\ v^2=\frac{GM}{r}=\frac{g_0R^2}{r}.\]
 <p>Z obhodnim časom \(t_0=2\pi r/v\) dobimo 3. Keplerjev zakon \(r^3=\dfrac{g_0R^2t_0^2}{4\pi^2}\). Masa satelita se pokrajša.</p>
 </div>
+<div class="viz" data-viz="satelit"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Gravitacijska sila</b>\(F=G\dfrac{m_1m_2}{r^2}\)</div>
@@ -463,6 +496,7 @@ th{background:var(--surface2)}
 </ul>
 <p>Moč: \(P=dA/dt=Fv\).</p>
 </div>
+<div class="viz" data-viz="trk"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Gibalna količina</b>\(G=mv,\ \ \int F\,dt=\Delta G\)</div>
@@ -547,6 +581,7 @@ th{background:var(--surface2)}
 <h3>Energija vrtenja in kotaljenje</h3>
 <p>\(W_r=\dfrac{J\omega^2}{2}=\dfrac{\Gamma\omega}{2}=\dfrac{\Gamma^2}{2J}\). Pri kotaljenju brez podrsavanja je \(v_T=\omega R\) in \(W_k=\tfrac12mv_T^2+\tfrac12J^*\omega^2\) (translacija težišča + vrtenje okoli težišča).</p>
 </div>
+<div class="viz" data-viz="kotaljenje"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Navor</b>\(M=rF\sin\varphi=J\alpha\)</div>
@@ -644,6 +679,7 @@ th{background:var(--surface2)}
 <h3>Dušeno in vsiljeno nihanje</h3>
 <p>Z linearnim uporom \(F_u=-\gamma v\) amplituda eksponentno pojema: \(x=x_0e^{-\beta t}\cos(\omega t)\), \(\beta=\gamma/2m\), \(\omega=\sqrt{\omega_0^2-\beta^2}\). Pri vsiljenem nihanju s silo \(F_0\sin\omega t\) je amplituda največja blizu \(\omega\approx\omega_0\) — <strong>resonanca</strong>.</p>
 </div>
+<div class="viz" data-viz="nihanje"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Rešitev</b>\(x=x_0\sin(\omega_0t+\delta)\)<br>\(\ddot x=-\omega_0^2x\)</div>
@@ -709,6 +745,7 @@ th{background:var(--surface2)}
 <h3>Površinska napetost</h3>
 <p>\(\gamma=\Delta W/\Delta S=F/l\). Laplaceova enačba za tlak v kapljici: \(\Delta p=2\gamma/R\) (milni mehurček ima dve površini: \(4\gamma/R\)). Kapilarni dvig: \(h=\dfrac{2\gamma\cos\theta}{\rho gr}\), kontaktni kot \(\theta\) določa Youngova enačba.</p>
 </div>
+<div class="viz" data-viz="venturi"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Hidrostatični tlak</b>\(p=p_0+\rho gh\)</div>
@@ -822,6 +859,7 @@ th{background:var(--surface2)}
 <p><strong>Stoječe valovanje</strong> nastane s superpozicijo dveh nasprotno potujočih valovanj. Na struni, vpeti na obeh koncih, se mora v dolžino \(L\) prilegati celo število polvalov: \(\lambda_n=2L/n\), \(\nu_n=nc/(2L)\).</p>
 <p><strong>Zvok</strong> je longitudinalno valovanje: v trdnini \(c=\sqrt{E/\rho}\), v kapljevini \(c=\sqrt{1/(\chi\rho)}\), v plinu \(c=\sqrt{\kappa RT/M}\). Jakost zvoka v decibelih \(10\log(j/j_0)\). <strong>Dopplerjev pojav:</strong> premikajoči se izvor \(\nu=\nu_0/(1\mp v_i/c)\), premikajoči se opazovalec \(\nu=\nu_0(1\pm v_o/c)\) (zgornji znak: približevanje).</p>
 </div>
+<div class="viz" data-viz="struna"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Valovanje</b>\(c=\lambda\nu=\dfrac\omega k\)<br>\(y=A\sin(\omega t-kx)\)</div>
@@ -861,6 +899,7 @@ th{background:var(--surface2)}
 <h3>Toplotni stroji, entropija, prenos toplote</h3>
 <p>Izkoristek toplotnega stroja \(\eta=\dfrac{|A|}{Q_\text{dov}}=1-\dfrac{|Q_\text{odv}|}{Q_\text{dov}}\); največji (Carnotov) \(\eta=1-T_2/T_1\). Entropija \(\Delta S\ge\int dQ/T\). Prevajanje toplote \(P=\lambda S\dfrac{T_1-T_2}{d}\). Toplotno raztezanje \(\Delta l=\alpha l\Delta T\), \(\Delta V=\beta V\Delta T\), \(\beta=3\alpha\).</p>
 </div>
+<div class="viz" data-viz="pv"></div>
 <h3>Formule</h3>
 <div class="formulas">
   <div class="f"><b>Plinska enačba</b>\(pV=nRT=\dfrac mMRT\)</div>
@@ -1037,5 +1076,6 @@ th{background:var(--surface2)}
   if(document.readyState==='complete') renderMath(); else window.addEventListener('load',renderMath);
 })();
 </script>
+<script src="viz.js"></script>
 </body>
 </html>

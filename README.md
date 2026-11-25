@@ -21,9 +21,12 @@ Devet poglavij – vsako ima kratko teorijo, formule in naloge:
 Vključenih je vseh 32 nalog iz 1. kolokvijev in 1. izpitov 2022/23–2025/26 ter nekaj dodatnih vaj.
 Pri vsaki nalogi lahko preveriš svoj številski rezultat, odpiraš postopek korak za korakom in šele na klik pokažeš rešitev.
 
+V vsakem poglavju je tudi interaktivna vizualizacija (drsniki + animacija): poševni met, klada na klancu s trenjem, satelitske tirnice, trk dveh vozičkov, kotaljenje po klancu, dušeno/vsiljeno nihanje z resonančno krivuljo, Venturijeva cev, stoječe valovanje in procesi plina v diagramu p(V).
+
 ## Mape
 
 - `index.html` – skripta
+- `viz.js` – interaktivne vizualizacije (brez zunanjih knjižnic)
 - `kolokviji/` – originalni kolokviji in izpiti (PDF)
 - `formule/` – lista s formulami, ki so ju sestavili študenti
 
