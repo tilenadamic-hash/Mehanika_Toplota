@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mehanika in toplota — skripta</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#f7f6f2; --surface:#ffffff; --surface2:#f0eee8; --text:#1d1d1f; --muted:#5f6068;
+  --border:#dedbd2; --accent:#2f5bd3; --accent-soft:#e6ecfb; --ok:#1f7a4a; --ok-soft:#e3f3ea;
+  --bad:#b3261e; --bad-soft:#fbe7e6; --warn:#8a5a00; --warn-soft:#fbf0d9; --formula:#fbfaf7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15161a; --surface:#1e2026; --surface2:#262931; --text:#e9e9ee; --muted:#a3a5ae;
+    --border:#33363f; --accent:#8aa8ff; --accent-soft:#232b44; --ok:#6fd39c; --ok-soft:#1b3127;
+    --bad:#ff8f87; --bad-soft:#3a1f1e; --warn:#f0c46b; --warn-soft:#352a16; --formula:#1a1c21;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15161a; --surface:#1e2026; --surface2:#262931; --text:#e9e9ee; --muted:#a3a5ae;
+  --border:#33363f; --accent:#8aa8ff; --accent-soft:#232b44; --ok:#6fd39c; --ok-soft:#1b3127;
+  --bad:#ff8f87; --bad-soft:#3a1f1e; --warn:#f0c46b; --warn-soft:#352a16; --formula:#1a1c21;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1240px;margin:0 auto}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 16px;border-right:1px solid var(--border)}
+nav.side h1{font-size:1.05rem;margin:0 0 4px;line-height:1.3}
+nav.side .sub{color:var(--muted);font-size:.85rem;margin-bottom:16px}
+nav.side a{display:flex;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:.93rem}
+nav.side a:hover{background:var(--surface2)}
+nav.side a .cnt{color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+nav.side a .cnt.full{color:var(--ok);font-weight:600}
+.progress{margin:14px 0 18px}
+.bar{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.progress small{color:var(--muted)}
+.tools{display:flex;flex-direction:column;gap:6px;margin-top:18px}
+main{padding:28px 32px 80px;min-width:0}
+.hero{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:28px}
+.hero h2{margin:0 0 6px;font-size:1.35rem}
+.hero p{margin:6px 0;color:var(--muted)}
+section.topic{margin-bottom:56px}
+section.topic>h2{font-size:1.6rem;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+h3{font-size:1.12rem;margin:26px 0 10px}
+.theory{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px 22px 14px}
+.theory p,.theory li{max-width:75ch}
+.formulas{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.f{background:var(--formula);border:1px solid var(--border);border-radius:10px;padding:10px 12px;overflow-x:auto}
+.f b{display:block;font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px}
+.task{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin:14px 0;transition:border-color .2s}
+.task.is-done{border-color:var(--ok)}
+.task-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.src{font-size:.8rem;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.src.extra{background:var(--warn-soft);color:var(--warn)}
+.done{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.done input{width:17px;height:17px;accent-color:var(--ok)}
+.q{overflow-x:auto}
+.q p{margin:8px 0}
+figure{margin:10px 0;text-align:center}
+figure svg{max-width:100%;height:auto;color:var(--text)}
+.checks{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
+.check{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.92rem}
+.check .lbl{min-width:0}
+.check input{width:120px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+.check .unit{color:var(--muted)}
+.fb{font-size:.88rem;font-weight:600}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)} .fb.warn{color:var(--warn)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font:inherit;font-size:.9rem;padding:7px 13px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer}
+button:hover:not(:disabled){border-color:var(--accent)}
+button:disabled{opacity:.55;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] button.primary{color:#111}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) button.primary{color:#111}}
+ol.steps{margin:14px 0 0;padding-left:0;list-style:none;counter-reset:st}
+ol.steps li{counter-increment:st;position:relative;padding:10px 14px 10px 48px;margin:8px 0;background:var(--surface2);border-radius:10px;overflow-x:auto}
+ol.steps li::before{content:counter(st);position:absolute;left:12px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:.8rem;font-weight:700;display:grid;place-items:center}
+ol.steps li.hid{display:none}
+.sol{display:none;margin-top:12px;padding:12px 16px;border-radius:10px;background:var(--ok-soft);border-left:4px solid var(--ok);overflow-x:auto}
+.sol.show{display:block}
+.sol::before{content:"Rešitev";display:block;font-weight:700;color:var(--ok);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.tip{background:var(--warn-soft);border-left:4px solid var(--warn);padding:8px 14px;border-radius:8px;margin:10px 0}
+.katex-display{margin:.5em 0;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+table{border-collapse:collapse;margin:8px 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:5px 10px;text-align:left}
+th{background:var(--surface2)}
+.tablewrap{overflow-x:auto}
+@media (max-width:900px){
+  .layout{display:block}
+  nav.side{position:sticky;top:0;z-index:5;height:auto;padding:10px 16px;border-right:0;border-bottom:1px solid var(--border);background:var(--bg);display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
+  nav.side h1,nav.side .sub,nav.side .progress,nav.side .tools{display:none}
+  #navlinks{display:flex;gap:6px}
+  nav.side a{flex:none;border:1px solid var(--border)}
+  main{padding:18px 16px 60px}
+  .task{padding:14px 14px}
+  .theory{padding:4px 14px 12px}
+  html{scroll-padding-top:64px}
+}
+@media print{nav.side{display:none}.layout{display:block}.sol,ol.steps li.hid{display:block!important}.btns,.checks{display:none}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="side" id="nav">
+  <h1>Mehanika in toplota</h1>
+  <div class="sub">Skripta za učenje · AE, 1. letnik</div>
+  <div class="progress"><div class="bar"><i id="pbar"></i></div><small id="ptext">0 / 0 nalog rešenih</small></div>
+  <div id="navlinks"></div>
+  <div class="tools">
+    <button id="theme">Svetla / temna tema</button>
+    <button id="reset">Ponastavi napredek</button>
+  </div>
+</nav>
+
+<main>
+<div class="hero">
+  <h2>Kako uporabljati skripto</h2>
+  <p>Vsako poglavje ima kratko <strong>teorijo</strong>, <strong>formule</strong> in <strong>naloge</strong> iz kolokvijev in izpitov 2022–2026 (modra oznaka). Rumeno označene naloge so dodatne vaje za snov, ki je v kolokvijih ni bilo.</p>
+  <p>Najprej nalogo reši sam. Če obstaja polje za rezultat, vpiši številko in klikni <em>Preveri</em> (dovoljeno ~2 % odstopanja). Če se zatakne, odpiraj <em>postopek korak za korakom</em>. <em>Rešitev</em> se pokaže šele, ko klikneš gumb.</p>
+  <p>Kjer naloga ne navaja drugače, je \(g = 9{,}81\ \mathrm{m/s^2}\).</p>
+  <p><strong>Originali (PDF):</strong>
+    kolokviji <a href="kolokviji/22-23_1_kolokvij.pdf">2022</a> · <a href="kolokviji/23-24_1_kolokvij.pdf">2023</a> · <a href="kolokviji/24-25_1_kolokvij.pdf">2024</a> · <a href="kolokviji/25-26_1_kolokvij.pdf">2025</a> —
+    izpiti <a href="kolokviji/22-23_1_izpit.pdf">2023</a> · <a href="kolokviji/23-24_1_izpit.pdf">2024</a> · <a href="kolokviji/24-25_1_izpit.pdf">2025</a> · <a href="kolokviji/25-26_1_izpit.pdf">2026</a> —
+    formule <a href="formule/enacbe_2017.pdf">list 2017</a> · <a href="formule/enacbe_rocno_2020.jpg">ročni list 2020</a></p>
+</div>
+
+<!-- ============================ 1. KINEMATIKA ============================ -->
+<section class="topic" id="kinematika" data-title="1. Kinematika">
+<h2>1. Kinematika</h2>
+<div class="theory">
+<h3>Lega, hitrost, pospešek</h3>
+<p>Gibanje točkastega telesa opišemo s krajevnim vektorjem \(\vec r(t)\). Hitrost je odvod lege, pospešek odvod hitrosti:</p>
+\[\vec v=\frac{d\vec r}{dt},\qquad \vec a=\frac{d\vec v}{dt}=\frac{d^2\vec r}{dt^2}.\]
+<p>Obratno dobimo hitrost in pot z integracijo: \(v(t)=v_0+\int_0^t a\,dt\), \(s=\int_0^t v\,dt\).</p>
+<h3>Premo enakomerno pospešeno gibanje (\(a=\) konst.)</h3>
+<p>Če iz \(v=v_0+at\) izrazimo čas in ga vstavimo v \(s=v_0t+\tfrac{at^2}{2}\), dobimo zvezo brez časa \(v^2=v_0^2+2as\) — uporabna, kadar čas ni podan (zavorna pot!). <strong>Prosti pad</strong> in <strong>navpični met</strong> sta posebna primera z \(a=-g\) (os \(y\) navzgor).</p>
+<h3>Vodoravni in poševni met</h3>
+<p>Gibanje razstavimo na dve <em>neodvisni</em> gibanji: v vodoravni smeri enakomerno (\(a_x=0\)), v navpični enakomerno pospešeno (\(a_y=-g\)). Skupni parameter je čas \(t\). Hitrost ob udarcu sestavimo iz komponent \(v=\sqrt{v_x^2+v_y^2}\), kot pa iz \(\tan\beta=v_y/v_x\).</p>
+<h3>Kroženje</h3>
+<p>Zasuk \(\varphi\), kotna hitrost \(\omega=d\varphi/dt\), kotni pospešek \(\alpha=d\omega/dt\). Obodna hitrost je \(v=\omega r\). Pri kroženju ima telo vedno <strong>radialni (centripetalni) pospešek</strong> \(a_r=v^2/r=\omega^2r\), ki kaže proti središču; tangentni pospešek \(a_t=\alpha r\) spreminja velikost hitrosti.</p>
+<div class="tip"><strong>Nasvet:</strong> najprej izberi koordinatni sistem (kje je izhodišče, katera smer je pozitivna). Večina napak pri metih je napak v predznaku \(g\).</div>
+</div>
+
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Enakomerno</b>\(s=vt\)</div>
+  <div class="f"><b>Enakomerno pospešeno</b>\(v=v_0+at\)<br>\(s=v_0t+\dfrac{at^2}{2}\)<br>\(v^2=v_0^2+2as\)</div>
+  <div class="f"><b>Prosti pad z višine h</b>\(t=\sqrt{\dfrac{2h}{g}},\ \ v=\sqrt{2gh}\)</div>
+  <div class="f"><b>Navpični met</b>\(v=v_0-gt,\ \ y=v_0t-\dfrac{gt^2}{2}\)<br>\(t_\text{vrh}=\dfrac{v_0}{g},\ \ h_\text{max}=\dfrac{v_0^2}{2g}\)</div>
+  <div class="f"><b>Vodoravni met</b>\(x=v_0t,\ \ y=h-\dfrac{gt^2}{2}\)<br>\(t_p=\sqrt{\dfrac{2h}{g}},\ \ D=v_0\sqrt{\dfrac{2h}{g}}\)</div>
+  <div class="f"><b>Poševni met</b>\(v_{0x}=v_0\cos\varphi,\ v_{0y}=v_0\sin\varphi\)<br>\(D=\dfrac{v_0^2\sin 2\varphi}{g}\)<br>\(y=x\tan\varphi-\dfrac{gx^2}{2v_0^2\cos^2\varphi}\)</div>
+  <div class="f"><b>Kroženje</b>\(v=\omega r,\ \ \omega=2\pi\nu=\dfrac{2\pi}{t_0}\)<br>\(a_r=\dfrac{v^2}{r}=\omega^2r,\ \ a_t=\alpha r\)</div>
+  <div class="f"><b>Enakomerno pospešeno kroženje</b>\(\omega=\omega_0+\alpha t\)<br>\(\varphi=\omega_0t+\dfrac{\alpha t^2}{2}\)<br>\(\omega^2=\omega_0^2+2\alpha\varphi\)</div>
+</div>
+
+<h3>Naloge</h3>
+
+<article class="task" id="t-i22-4">
+  <div class="task-head"><span class="src">Izpit 2022/23 · 4. naloga</span></div>
+  <div class="q"><p>Točkasto telo, ki je v začetku mirovalo, se začne gibati premo. Odvisnost hitrosti od časa je \(v(t)=k\,t^{1/2}\), kjer je \(k=1\ \mathrm{m\,s^{-3/2}}\). Kolikšen je pospešek telesa 5 sekund po začetku gibanja?</p></div>
+  <div class="checks" data-checks='[["a(5 s)",0.2236,"m/s²"]]'></div>
+  <ol class="steps">
+    <li>Pospešek je odvod hitrosti po času: \(a=\dfrac{dv}{dt}\).</li>
+    <li>Odvajamo potenco: \(\dfrac{d}{dt}\big(k\,t^{1/2}\big)=\dfrac{k}{2}\,t^{-1/2}=\dfrac{k}{2\sqrt t}\).</li>
+    <li>Vstavimo \(t=5\ \mathrm s\): \(a=\dfrac{1}{2\sqrt5}\ \mathrm{m/s^2}\). (Enote: \(\mathrm{m\,s^{-3/2}}\cdot\mathrm{s^{-1/2}}=\mathrm{m/s^2}\).)</li>
+  </ol>
+  <div class="sol">\(a(t)=\dfrac{k}{2\sqrt t}\ \Rightarrow\ a(5\ \mathrm s)=0{,}224\ \mathrm{m/s^2}\). Pospešek ni konstanten — s časom pada.</div>
+</article>
+
+<article class="task" id="t-i23-3">
+  <div class="task-head"><span class="src">Izpit 2023/24 · 3. naloga</span></div>
+  <div class="q"><p>Točkasto telo se giblje premo s konstantno hitrostjo \(20\ \mathrm{m/s}\). V nekem trenutku začne zavirati s konstantnim pojemkom in se ustavi po \(100\ \mathrm m\) zavorne poti. Koliko časa zavira in kolikšen je pojemek?</p></div>
+  <div class="checks" data-checks='[["pojemek a",2,"m/s²"],["čas t",10,"s"]]'></div>
+  <ol class="steps">
+    <li>Čas ni podan, zato uporabimo enačbo brez časa: \(v^2=v_0^2-2as\), kjer je končna hitrost \(v=0\).</li>
+    <li>\(0=v_0^2-2as\ \Rightarrow\ a=\dfrac{v_0^2}{2s}=\dfrac{(20\ \mathrm{m/s})^2}{2\cdot100\ \mathrm m}\).</li>
+    <li>Čas iz \(v=v_0-at=0\): \(t=\dfrac{v_0}{a}\). Kontrola: pri enakomernem zaviranju je povprečna hitrost \(v_0/2\), zato \(s=\tfrac{v_0}{2}t\Rightarrow t=\tfrac{2s}{v_0}\).</li>
+  </ol>
+  <div class="sol">Pojemek \(a=2\ \mathrm{m/s^2}\), čas zaviranja \(t=10\ \mathrm s\).</div>
+</article>
+
+<article class="task" id="t-k23-3">
+  <div class="task-head"><span class="src">Kolokvij 2023/24 · 3. naloga</span></div>
+  <div class="q"><p>Kamen vržemo s tal navpično navzgor z začetno hitrostjo \(v_0=15\ \mathrm{m/s}\). Zračni upor zanemarimo, \(g_0=9{,}8\ \mathrm{m/s^2}\).</p>
+  <p>a) Koliko časa potrebuje do najvišje lege? b) Kako visoko je najvišja lega? c) Koliko časa potrebuje, da pade nazaj na tla? d) Kolikšni sta višina in hitrost po 1 s? Ali se takrat dviguje ali pada?</p></div>
+  <div class="checks" data-checks='[["a) t_vrh",1.531,"s"],["b) h_max",11.48,"m"],["c) t_tla",3.061,"s"],["d) y(1 s)",10.1,"m"],["d) v(1 s)",5.2,"m/s"]]'></div>
+  <ol class="steps">
+    <li>Os \(y\) usmerimo navzgor, izhodišče na tleh: \(v(t)=v_0-g_0t\), \(y(t)=v_0t-\tfrac{g_0t^2}{2}\).</li>
+    <li>V najvišji legi je hitrost nič: \(0=v_0-g_0t_1\Rightarrow t_1=\dfrac{v_0}{g_0}=\dfrac{15}{9{,}8}\ \mathrm s\).</li>
+    <li>Višina: \(h=y(t_1)=\dfrac{v_0^2}{2g_0}\) (ali iz \(v^2=v_0^2-2g_0h\) pri \(v=0\)).</li>
+    <li>Na tleh je \(y=0\): \(t\big(v_0-\tfrac{g_0t}{2}\big)=0\Rightarrow t_2=\dfrac{2v_0}{g_0}=2t_1\) (vzpon in padec trajata enako).</li>
+    <li>Pri \(t=1\ \mathrm s\): \(y=15\cdot1-4{,}9\cdot1^2\), \(v=15-9{,}8\cdot1\). Hitrost je pozitivna (\(t\lt t_1\)), zato se kamen še dviguje.</li>
+  </ol>
+  <div class="sol">a) \(t_1=1{,}53\ \mathrm s\) · b) \(h=11{,}5\ \mathrm m\) · c) \(t_2=3{,}06\ \mathrm s\) · d) \(y=10{,}1\ \mathrm m\), \(v=5{,}2\ \mathrm{m/s}\) navzgor — kamen se še dviguje.</div>
+</article>
+
+<article class="task" id="t-i24-4">
+  <div class="task-head"><span class="src">Izpit 2024/25 · 4. naloga</span></div>
+  <div class="q"><p>Kamen spustimo z vrha \(20\ \mathrm m\) visokega stolpa, da prosto pade. Koliko časa potrebuje za pot od šestega nadstropja na višini \(18\ \mathrm m\) do četrtega nadstropja na višini \(12\ \mathrm m\)? \(g=9{,}81\ \mathrm{m/s^2}\).</p></div>
+  <div class="checks" data-checks='[["Δt",0.6386,"s"]]'></div>
+  <ol class="steps">
+    <li>Pot merimo od vrha navzdol: \(s(t)=\tfrac{gt^2}{2}\Rightarrow t=\sqrt{2s/g}\).</li>
+    <li>Do višine 18 m kamen pade \(s_1=20-18=2\ \mathrm m\): \(t_1=\sqrt{2\cdot2/9{,}81}=0{,}639\ \mathrm s\).</li>
+    <li>Do višine 12 m pade \(s_2=8\ \mathrm m\): \(t_2=\sqrt{2\cdot8/9{,}81}=1{,}277\ \mathrm s\).</li>
+    <li>Iskani čas je razlika \(\Delta t=t_2-t_1\).</li>
+  </ol>
+  <div class="sol">\(\Delta t=t_2-t_1=0{,}639\ \mathrm s\). (Zanimivo: ker je \(s_2=4s_1\), je \(t_2=2t_1\), zato je \(\Delta t=t_1\).)</div>
+</article>
+
+<article class="task" id="t-k24-3">
+  <div class="task-head"><span class="src">Kolokvij 2024/25 · 3. naloga</span></div>
+  <div class="q"><p>Točkasto telo, ki je v začetku mirovalo, se začne gibati premo s pospeškom \(1\ \mathrm{m/s^2}\) proti \(100\ \mathrm m\) oddaljenemu cilju. Koliko časa potrebuje za zadnjih \(10\ \mathrm m\) poti?</p></div>
+  <div class="checks" data-checks='[["Δt",0.7257,"s"]]'></div>
+  <ol class="steps">
+    <li>Iz mirovanja: \(s=\tfrac{at^2}{2}\Rightarrow t(s)=\sqrt{2s/a}\).</li>
+    <li>Čas do cilja: \(t_{100}=\sqrt{200}\ \mathrm s=14{,}142\ \mathrm s\).</li>
+    <li>Čas do 90 m: \(t_{90}=\sqrt{180}\ \mathrm s=13{,}416\ \mathrm s\).</li>
+    <li>\(\Delta t=t_{100}-t_{90}\). Pozor: ne računaj \(10\ \mathrm m\) kot gibanje iz mirovanja — na 90 m telo že ima hitrost!</li>
+  </ol>
+  <div class="sol">\(\Delta t=\sqrt{200}-\sqrt{180}=0{,}726\ \mathrm s\).</div>
+</article>
+
+<article class="task" id="t-k22-1">
+  <div class="task-head"><span class="src">Kolokvij 2022/23 · 1. naloga</span></div>
+  <div class="q"><p>Izpeljite (ab initio) izraz za domet krogle pri poševnem metu (v vakuumu) v odvisnosti od kota začetne hitrosti proti vodoravnici \(\varphi\). Velikost začetne hitrosti je \(v_0\). Rezultat izrazite s simboli \(\varphi\) in \(v_0\).</p></div>
+  <ol class="steps">
+    <li>Začetno hitrost razstavimo na komponenti: \(v_{0x}=v_0\cos\varphi,\ \ v_{0y}=v_0\sin\varphi\). Pospešek: \(a_x=0,\ a_y=-g\).</li>
+    <li>Z integracijo pospeška dobimo hitrosti \(v_x=v_0\cos\varphi\), \(v_y=v_0\sin\varphi-gt\), z integracijo hitrosti pa lego (izhodišče v točki meta):
+    \[x(t)=v_0\cos\varphi\,t,\qquad y(t)=v_0\sin\varphi\,t-\frac{gt^2}{2}.\]</li>
+    <li>Krogla pade nazaj na tla, ko je \(y=0\): \(t\big(v_0\sin\varphi-\tfrac{gt}{2}\big)=0\Rightarrow t_D=\dfrac{2v_0\sin\varphi}{g}\) (rešitev \(t=0\) je trenutek meta).</li>
+    <li>Domet je vodoravna lega ob času \(t_D\): \(D=x(t_D)=v_0\cos\varphi\cdot\dfrac{2v_0\sin\varphi}{g}\). Uporabimo \(2\sin\varphi\cos\varphi=\sin2\varphi\).</li>
+  </ol>
+  <div class="sol">\[D=\frac{v_0^2\sin2\varphi}{g}\]Največji domet je pri \(\varphi=45^\circ\) (\(D_\text{max}=v_0^2/g\)). Komplementarna kota (npr. 15° in 75°, 30° in 60°) dasta enak domet — kot na sliki v nalogi.</div>
+</article>
+
+<article class="task" id="t-k24-4">
+  <div class="task-head"><span class="src">Kolokvij 2024/25 · 4. naloga</span></div>
+  <div class="q"><p>Kamen vržemo v vodoravni smeri s \(20\ \mathrm m\) visokega stolpa z začetno hitrostjo \(15\ \mathrm{m/s}\). Koliko časa potrebuje, da pade na tla? Kolikšen je domet? S kolikšno hitrostjo in pod kakšnim kotom pade na tla?</p></div>
+  <div class="checks" data-checks='[["čas t",2.019,"s"],["domet D",30.29,"m"],["hitrost v",24.85,"m/s"],["kot β pod vodoravnico",52.87,"°"]]'></div>
+  <ol class="steps">
+    <li>Navpično gibanje je prosti pad (začetna navpična hitrost je 0): \(h=\tfrac{gt^2}{2}\Rightarrow t=\sqrt{2h/g}=\sqrt{40/9{,}81}\).</li>
+    <li>Vodoravno je gibanje enakomerno: \(D=v_0t\).</li>
+    <li>Komponenti hitrosti ob udarcu: \(v_x=v_0=15\ \mathrm{m/s}\), \(v_y=gt=19{,}8\ \mathrm{m/s}\).</li>
+    <li>Velikost \(v=\sqrt{v_x^2+v_y^2}\) (ali iz ohranitve energije \(v=\sqrt{v_0^2+2gh}\)), kot \(\tan\beta=v_y/v_x\).</li>
+  </ol>
+  <div class="sol">\(t=2{,}02\ \mathrm s\), \(D=30{,}3\ \mathrm m\), \(v=24{,}8\ \mathrm{m/s}\), \(\beta=52{,}9^\circ\) pod vodoravnico.</div>
+</article>
+
+<article class="task" id="t-k25-4">
+  <div class="task-head"><span class="src">Kolokvij 2025/26 · 4. naloga</span></div>
+  <div class="q"><p>Kamen vržemo z začetno hitrostjo \(20\ \mathrm{m/s}\) pod kotom \(40^\circ\) poševno navzgor proti \(15\ \mathrm m\) oddaljeni zelo visoki navpični steni. Na kolikšni višini kamen zadene steno? S kolikšno hitrostjo jo zadene?</p></div>
+  <div class="checks" data-checks='[["višina y",7.885,"m"],["hitrost v",15.66,"m/s"]]'></div>
+  <ol class="steps">
+    <li>Komponenti: \(v_{0x}=20\cos40^\circ=15{,}32\ \mathrm{m/s}\), \(v_{0y}=20\sin40^\circ=12{,}86\ \mathrm{m/s}\).</li>
+    <li>Čas do stene iz vodoravnega (enakomernega) gibanja: \(t=\dfrac{d}{v_{0x}}=\dfrac{15}{15{,}32}=0{,}979\ \mathrm s\).</li>
+    <li>Višina: \(y=v_{0y}t-\tfrac{gt^2}{2}=12{,}86\cdot0{,}979-4{,}905\cdot0{,}979^2\).</li>
+    <li>Navpična hitrost ob zadetku: \(v_y=v_{0y}-gt=3{,}25\ \mathrm{m/s}\) (pozitivna → kamen se še dviga). Vodoravna je nespremenjena. \(v=\sqrt{v_x^2+v_y^2}\).</li>
+  </ol>
+  <div class="sol">Steno zadene na višini \(y=7{,}88\ \mathrm m\) s hitrostjo \(v=15{,}7\ \mathrm{m/s}\) (smer \(12^\circ\) nad vodoravnico, kamen se še dviguje).</div>
+</article>
+
+<article class="task" id="t-x-kroz">
+  <div class="task-head"><span class="src extra">Dodatna vaja · kroženje</span></div>
+  <div class="q"><p>Kolo s polmerom \(0{,}30\ \mathrm m\) se vrti s \(600\) obrati na minuto. Kolikšni so kotna hitrost, obodna hitrost in radialni pospešek točke na obodu?</p></div>
+  <div class="checks" data-checks='[["ω",62.83,"s⁻¹"],["v",18.85,"m/s"],["a_r",1184,"m/s²"]]'></div>
+  <ol class="steps">
+    <li>Frekvenca: \(\nu=600/60\ \mathrm s^{-1}=10\ \mathrm{Hz}\), \(\omega=2\pi\nu\).</li>
+    <li>\(v=\omega r\), \(a_r=\omega^2r=v^2/r\).</li>
+  </ol>
+  <div class="sol">\(\omega=62{,}8\ \mathrm{s^{-1}}\), \(v=18{,}8\ \mathrm{m/s}\), \(a_r=1{,}18\cdot10^3\ \mathrm{m/s^2}\) (≈ 120 g).</div>
+</article>
+</section>
+
+<!-- ============================ 2. DINAMIKA ============================ -->
+<section class="topic" id="dinamika" data-title="2. Newtonovi zakoni">
+<h2>2. Newtonovi zakoni, trenje, klanec</h2>
+<div class="theory">
+<h3>Newtonovi zakoni</h3>
+<ol>
+<li><strong>Zakon o ravnovesju:</strong> če je vsota sil nič, telo miruje ali se giblje enakomerno premo.</li>
+<li><strong>Zakon gibanja:</strong> \(\sum\vec F=m\vec a\), oziroma splošneje \(\sum\vec F=\dfrac{d\vec G}{dt}\), kjer je \(\vec G=m\vec v\) gibalna količina.</li>
+<li><strong>Zakon o vzajemnem učinku:</strong> \(\vec F_{12}=-\vec F_{21}\) — sili delujeta na <em>različni</em> telesi.</li>
+</ol>
+<h3>Postopek reševanja</h3>
+<p>(1) Nariši vsako telo posebej in vse sile nanj (teža \(mg\), normalna sila \(N\), trenje/lepenje, sila vrvi, vzmeti …). (2) Izberi osi — pri klancu vzdolž in pravokotno na klanec. (3) Za vsako telo zapiši 2. Newtonov zakon po komponentah. (4) Reši sistem enačb.</p>
+<h3>Trenje in lepenje</h3>
+<p>Dokler telo miruje, deluje <strong>sila lepenja</strong>, ki je ravno tolikšna, kot je potrebno za ravnovesje, a največ \(F_l\le k_lN\). Ko telo drsi, deluje <strong>sila trenja</strong> \(F_{tr}=k_{tr}N\), ki kaže nasproti hitrosti. Običajno je \(k_{tr}\lt k_l\).</p>
+<h3>Klanec z nagibom φ</h3>
+<p>Težo razstavimo na dinamično komponento vzdolž klanca \(F_d=mg\sin\varphi\) in statično komponento pravokotno na klanec \(F_s=mg\cos\varphi\), ki je enaka normalni sili \(N\).</p>
+<h3>Neinercialni opazovalni sistemi</h3>
+<p>Opazovalec v sistemu, ki se giblje s pospeškom \(\vec a_0\), mora dodati <strong>sistemsko silo</strong> \(\vec F_s=-m\vec a_0\). V vrtečem sistemu je to centrifugalna sila \(F_{cf}=m\omega^2r\) (in Coriolisova \(\vec F_{Cor}=-2m\,\vec\omega\times\vec v_r\) za gibajoča se telesa).</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>2. Newtonov zakon</b>\(\sum\vec F=m\vec a=\dfrac{d\vec G}{dt}\)</div>
+  <div class="f"><b>Teža, vzmet</b>\(F_g=mg,\quad F=kx\)</div>
+  <div class="f"><b>Trenje / lepenje</b>\(F_{tr}=k_{tr}N,\quad F_l\le k_lN\)</div>
+  <div class="f"><b>Klanec</b>\(F_d=mg\sin\varphi,\ N=mg\cos\varphi\)<br>\(a=g(\sin\varphi-k_{tr}\cos\varphi)\)<br>mejni kot: \(\tan\varphi_m=k_l\)</div>
+  <div class="f"><b>Sistemska sila</b>\(\vec F_s=-m\vec a_0,\quad F_{cf}=m\omega^2r\)</div>
+  <div class="f"><b>Centripetalna sila</b>\(F_{cp}=m\dfrac{v^2}{r}=m\omega^2r\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-k22-2">
+  <div class="task-head"><span class="src">Kolokvij 2022/23 · 2. naloga</span></div>
+  <div class="q"><p>Voziček se giblje s konstantnim pospeškom \(a_0\) po ravnem tiru. Na vozičku je stojalo, na katerem visi utež z maso \(m_u\) na vrvici. Kolikšen je nagib vrvice in s kakšno silo je napeta vrvica? Rezultat izrazite s \(a_0\) in \(m_u\); težo vrvice zanemarimo.</p>
+  <figure><svg viewBox="0 0 320 170" width="320" aria-label="Voziček z nihalom">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="60" y="110" width="170" height="30" rx="4"/><circle cx="95" cy="148" r="10"/><circle cx="195" cy="148" r="10"/>
+      <line x1="20" y1="158" x2="300" y2="158"/><line x1="200" y1="110" x2="200" y2="25"/><line x1="200" y1="25" x2="140" y2="25"/>
+      <line x1="140" y1="25" x2="112" y2="90" stroke-dasharray="0"/><line x1="140" y1="25" x2="140" y2="95" stroke-dasharray="4 4" opacity=".5"/>
+      <path d="M140 60 A35 35 0 0 1 126 57" />
+    </g>
+    <circle cx="108" cy="98" r="9" fill="currentColor"/>
+    <text x="146" y="70" font-size="13" fill="currentColor">α</text><text x="84" y="102" font-size="12" fill="currentColor">mᵤ</text>
+    <g stroke="#2f5bd3" stroke-width="2.5" fill="#2f5bd3"><line x1="240" y1="80" x2="290" y2="80"/><path d="M290 80 l-9 -5 v10z"/></g>
+    <text x="252" y="72" font-size="13" fill="currentColor">a₀</text>
+  </svg></figure></div>
+  <ol class="steps">
+    <li>Opazujemo z mirujočih tal (inercialni sistem). Na utež delujeta le teža \(m_ug\) (navpično navzdol) in sila vrvice \(T\) (vzdolž vrvice). Utež se giblje skupaj z vozičkom, torej s pospeškom \(a_0\) vodoravno.</li>
+    <li>Vrvica je odklonjena za kot \(\alpha\) od navpičnice (nazaj, nasproti pospešku). Komponente 2. Newtonovega zakona:
+    \[x:\ T\sin\alpha=m_ua_0,\qquad y:\ T\cos\alpha-m_ug=0.\]</li>
+    <li>Delimo enačbi: \(\tan\alpha=\dfrac{a_0}{g}\).</li>
+    <li>Kvadriramo in seštejemo: \(T^2(\sin^2\alpha+\cos^2\alpha)=m_u^2(a_0^2+g^2)\).</li>
+    <li>Alternativa — opazovalec v vozičku: na utež deluje še sistemska sila \(-m_ua_0\); utež miruje, zato je vsota \(m_u\vec g-m_u\vec a_0+\vec T=0\) — dobimo isti rezultat.</li>
+  </ol>
+  <div class="sol">\[\tan\alpha=\frac{a_0}{g},\qquad T=m_u\sqrt{g^2+a_0^2}\]Vrvica je nagnjena nasproti smeri pospeška. Pri \(a_0=0\) visi navpično in \(T=m_ug\).</div>
+</article>
+
+<article class="task" id="t-i23-2">
+  <div class="task-head"><span class="src">Izpit 2023/24 · 2. naloga in Izpit 2025/26 · 1. naloga</span></div>
+  <div class="q"><p>Klada z maso \(m\) miruje na klancu, katerega nagib počasi povečujemo od nič. Koeficient lepenja je \(k_l\), koeficient trenja \(k_{tr}\). Pri katerem mejnem kotu \(\varphi_m\) klada zdrsne navzdol? Zahteva se celotna izpeljava.</p></div>
+  <ol class="steps">
+    <li>Sile na klado: teža \(mg\), normalna sila podlage \(N\), sila lepenja \(F_l\) (vzdolž klanca navzgor, ker bi klada drsela navzdol).</li>
+    <li>Pravokotno na klanec ni gibanja: \(N-mg\cos\varphi=0\Rightarrow N=mg\cos\varphi\).</li>
+    <li>Vzdolž klanca, dokler klada miruje: \(mg\sin\varphi-F_l=0\Rightarrow F_l=mg\sin\varphi\).</li>
+    <li>Lepenje je omejeno: \(F_l\le k_lN\). Torej \(mg\sin\varphi\le k_lmg\cos\varphi\Rightarrow\tan\varphi\le k_l\).</li>
+    <li>Klada zdrsne, ko je pogoj ravno presežen: \(\tan\varphi_m=k_l\). Masa se pokrajša. Koeficient trenja \(k_{tr}\) na mejni kot ne vpliva — odloča le o pospešku, ko klada že drsi.</li>
+  </ol>
+  <div class="sol">\[\tan\varphi_m=k_l\quad\Rightarrow\quad\varphi_m=\arctan k_l\]Ko klada drsi, je njen pospešek \(a=g(\sin\varphi-k_{tr}\cos\varphi)\); ker je \(k_{tr}\lt k_l\), je ob zdrsu \(a\gt0\) in klada pospešuje.</div>
+</article>
+
+<article class="task" id="t-k24-1">
+  <div class="task-head"><span class="src">Kolokvij 2024/25 · 1. naloga</span></div>
+  <div class="q"><p>Mejni kot, pri katerem zdrsne klada mase \(m\) po klancu navzdol, je \(25^\circ\). Izračunajte (s celotno izpeljavo) koeficient lepenja med klado in podlago.</p></div>
+  <div class="checks" data-checks='[["k_l",0.4663,""]]'></div>
+  <ol class="steps">
+    <li>Izpeljava kot v prejšnji nalogi: \(N=mg\cos\varphi\), \(F_l=mg\sin\varphi\), mejno stanje \(F_l=k_lN\).</li>
+    <li>\(k_l=\dfrac{mg\sin\varphi_m}{mg\cos\varphi_m}=\tan\varphi_m\).</li>
+  </ol>
+  <div class="sol">\(k_l=\tan25^\circ=0{,}466\).</div>
+</article>
+
+<article class="task" id="t-k25-3">
+  <div class="task-head"><span class="src">Kolokvij 2025/26 · 3. naloga</span></div>
+  <div class="q"><p>Kladi z masama \(2\ \mathrm{kg}\) (spodaj) in \(5\ \mathrm{kg}\) (zgoraj) sta povezani z lahko neraztegljivo vrvico. S silo \(70\ \mathrm N\) vzporedno s klancem vlečemo zgornjo klado navzgor po klancu z nagibom \(30^\circ\). Koeficient trenja s podlago je \(0{,}2\). S kolikšno silo je napeta vrvica med kladama? S kolikšnim pospeškom se kladi gibljeta?</p>
+  <figure><svg viewBox="0 -34 320 194" width="340" aria-label="Dve kladi na klancu">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="20" y1="150" x2="310" y2="150"/><line x1="20" y1="150" x2="290" y2="-5.9"/>
+      <g transform="translate(97.9 105) rotate(-30)"><rect x="0" y="-36" width="44" height="36"/></g>
+      <g transform="translate(193.2 50) rotate(-30)"><rect x="0" y="-36" width="44" height="36"/></g>
+      <line x1="127" y1="67.4" x2="184.2" y2="34.4"/>
+      <path d="M62 150 A42 42 0 0 0 56.4 129"/>
+    </g>
+    <g fill="currentColor" font-size="11">
+      <g transform="translate(97.9 105) rotate(-30)"><text x="8" y="-14">2 kg</text></g>
+      <g transform="translate(193.2 50) rotate(-30)"><text x="8" y="-14">5 kg</text></g>
+    </g>
+    <g stroke="#2f5bd3" fill="#2f5bd3" stroke-width="2.5"><line x1="222.3" y1="12.4" x2="260" y2="-9.4"/><path d="M265.6 -12.6 L259.4 -3.3 L254.4 -11.9 Z"/></g>
+    <text x="246" y="-20" font-size="13" fill="currentColor">70 N</text><text x="68" y="144" font-size="13" fill="currentColor">30°</text>
+  </svg></figure></div>
+  <div class="checks" data-checks='[["pospešek a",3.396,"m/s²"],["napetost T",20.0,"N"]]'></div>
+  <ol class="steps">
+    <li>Obe kladi se gibljeta navzgor z enakim pospeškom \(a\). Na vsako delujejo vzdolž klanca: dinamična komponenta teže \(mg\sin\alpha\) navzdol in trenje \(k\,mg\cos\alpha\) navzdol (nasproti gibanju). Vrvica vleče spodnjo klado navzgor s silo \(T\), zgornjo pa navzdol s silo \(T\).</li>
+    <li>Zgornja klada (\(m_2=5\ \mathrm{kg}\)): \(F-T-m_2g(\sin\alpha+k\cos\alpha)=m_2a\).<br>Spodnja klada (\(m_1=2\ \mathrm{kg}\)): \(T-m_1g(\sin\alpha+k\cos\alpha)=m_1a\).</li>
+    <li>Seštejemo enačbi (notranja sila \(T\) izpade): \(a=\dfrac{F}{m_1+m_2}-g(\sin\alpha+k\cos\alpha)\). Tu je \(\sin30^\circ+0{,}2\cos30^\circ=0{,}673\).</li>
+    <li>\(a=\dfrac{70}{7}-9{,}81\cdot0{,}673=10-6{,}60\ \mathrm{m/s^2}\).</li>
+    <li>Iz enačbe spodnje klade: \(T=m_1\big(a+g(\sin\alpha+k\cos\alpha)\big)=m_1\dfrac{F}{m_1+m_2}\).</li>
+  </ol>
+  <div class="sol">\(a=3{,}40\ \mathrm{m/s^2}\), \(T=\dfrac{m_1}{m_1+m_2}F=20\ \mathrm N\). Zanimivost: napetost vrvice ni odvisna od nagiba ne od trenja (če je \(k\) za obe kladi enak).</div>
+</article>
+</section>
+
+<!-- ============================ 3. GRAVITACIJA ============================ -->
+<section class="topic" id="gravitacija" data-title="3. Gravitacija">
+<h2>3. Gravitacija in sateliti</h2>
+<div class="theory">
+<h3>Gravitacijski zakon</h3>
+<p>Dve točkasti (ali krogelno simetrični) telesi se privlačita s silo \(F=G\dfrac{m_1m_2}{r^2}\), \(G=6{,}67\cdot10^{-11}\ \mathrm{Nm^2/kg^2}\). Na površini planeta z maso \(M\) in polmerom \(R\) je teža \(mg_0=GMm/R^2\), torej \(g_0=GM/R^2\) — zelo uporabno, ker lahko \(GM\) nadomestimo z \(g_0R^2\).</p>
+<p>Na višini \(h\) nad površjem: \(g(h)=g_0\dfrac{R^2}{(R+h)^2}\).</p>
+<h3>Kroženje satelita</h3>
+<p>Satelit kroži po krožnici s polmerom \(r=R+h\). Gravitacijska sila je centripetalna sila:</p>
+\[G\frac{Mm}{r^2}=m\frac{v^2}{r}\ \Rightarrow\ v^2=\frac{GM}{r}=\frac{g_0R^2}{r}.\]
+<p>Z obhodnim časom \(t_0=2\pi r/v\) dobimo 3. Keplerjev zakon \(r^3=\dfrac{g_0R^2t_0^2}{4\pi^2}\). Masa satelita se pokrajša.</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Gravitacijska sila</b>\(F=G\dfrac{m_1m_2}{r^2}\)</div>
+  <div class="f"><b>Težni pospešek</b>\(g_0=G\dfrac{M}{R^2},\ \ g(h)=g_0\dfrac{R^2}{(R+h)^2}\)</div>
+  <div class="f"><b>Satelit</b>\(v^2=\dfrac{g_0R^2}{R+h}\)<br>\(t_0=\dfrac{2\pi r}{v},\ \ r^3=\dfrac{g_0R^2t_0^2}{4\pi^2}\)</div>
+  <div class="f"><b>Potencialna energija</b>\(W_p=-G\dfrac{Mm}{r}\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-k22-3">
+  <div class="task-head"><span class="src">Kolokvij 2022/23 · 3. naloga</span></div>
+  <div class="q"><p>Kolikšen bi bil težni pospešek na površini planeta z enako maso kot Zemlja, a s polmerom samo \(100\ \mathrm{km}\)? Polmer Zemlje je \(6400\ \mathrm{km}\), \(g_0=9{,}8\ \mathrm{m/s^2}\).</p></div>
+  <div class="checks" data-checks='[["g",40141,"m/s²"]]'></div>
+  <ol class="steps">
+    <li>\(g=GM/R^2\). Masa je enaka, zato zapišemo razmerje: \(\dfrac{g}{g_0}=\dfrac{R_Z^2}{R^2}\).</li>
+    <li>\(\dfrac{R_Z}{R}=\dfrac{6400}{100}=64\Rightarrow g=g_0\cdot64^2=9{,}8\cdot4096\).</li>
+  </ol>
+  <div class="sol">\(g=4{,}01\cdot10^4\ \mathrm{m/s^2}\) (4096-krat več kot na Zemlji).</div>
+</article>
+
+<article class="task" id="t-k23-4">
+  <div class="task-head"><span class="src">Kolokvij 2023/24 · 4. naloga</span></div>
+  <div class="q"><p>Na kolikšni višini kroži okoli Zemlje satelit s hitrostjo \(3\ \mathrm{km/s}\)? Polmer Zemlje je \(6400\ \mathrm{km}\), \(g_0=9{,}8\ \mathrm{m/s^2}\).</p></div>
+  <div class="checks" data-checks='[["višina h",3.820e7,"m"]]'></div>
+  <ol class="steps">
+    <li>Gravitacijska sila je centripetalna: \(mg_0\dfrac{R^2}{(R+h)^2}=m\dfrac{v^2}{R+h}\).</li>
+    <li>Izrazimo \(R+h=\dfrac{g_0R^2}{v^2}=\dfrac{9{,}8\cdot(6{,}4\cdot10^6)^2}{(3000)^2}\ \mathrm m=4{,}46\cdot10^7\ \mathrm m\).</li>
+    <li>\(h=(R+h)-R\).</li>
+  </ol>
+  <div class="sol">\(h=3{,}82\cdot10^7\ \mathrm m\approx38\,200\ \mathrm{km}\) (\(r\approx44\,600\ \mathrm{km}\) — malo dlje od geostacionarne tirnice).</div>
+</article>
+
+<article class="task" id="t-i22-3">
+  <div class="task-head"><span class="src">Izpit 2022/23 · 3. naloga</span></div>
+  <div class="q"><p>Planet ima polmer \(8000\ \mathrm{km}\), težni pospešek na površini pa je \(12\ \mathrm{m/s^2}\). Satelit za en obhod potrebuje \(12\,005\ \mathrm s\). Na kolikšni višini nad površjem kroži?</p></div>
+  <div class="checks" data-checks='[["višina h",6.101e6,"m"]]'></div>
+  <ol class="steps">
+    <li>Kot prej: \(v^2=\dfrac{g_0R^2}{r}\), kjer je \(r=R+h\).</li>
+    <li>Obhodni čas \(t_0=\dfrac{2\pi r}{v}\Rightarrow v=\dfrac{2\pi r}{t_0}\). Vstavimo: \(\dfrac{4\pi^2r^2}{t_0^2}=\dfrac{g_0R^2}{r}\).</li>
+    <li>\(r^3=\dfrac{g_0R^2t_0^2}{4\pi^2}=\dfrac{12\cdot(8\cdot10^6)^2\cdot12005^2}{4\pi^2}\ \mathrm{m^3}\Rightarrow r=1{,}41\cdot10^7\ \mathrm m\).</li>
+    <li>\(h=r-R\).</li>
+  </ol>
+  <div class="sol">\(r=14\,100\ \mathrm{km}\Rightarrow h\approx6{,}10\cdot10^6\ \mathrm m=6100\ \mathrm{km}\).</div>
+</article>
+</section>
+
+<!-- ============================ 4. ENERGIJA, TRKI ============================ -->
+<section class="topic" id="energija" data-title="4. Gibalna količina, energija, trki">
+<h2>4. Gibalna količina, delo, energija in trki</h2>
+<div class="theory">
+<h3>Gibalna količina in sunek sile</h3>
+<p>\(\vec G=m\vec v\). Sunek sile spremeni gibalno količino: \(\int\vec F\,dt=\Delta\vec G\). Če je vsota <em>zunanjih</em> sil na sistem nič, je skupna gibalna količina sistema <strong>ohranjena</strong>. To velja pri vsakem trku (sile trka so notranje in kratkotrajne).</p>
+<h3>Delo in energija</h3>
+<p>Delo sile: \(A=\int\vec F\cdot d\vec s\) (pri konstantni sili \(A=Fs\cos\varphi\)). <strong>Izrek o kinetični in potencialni energiji:</strong> delo ostalih sil (ne teže in ne prožnosti) je enako spremembi kinetične, potencialne in prožnostne energije:</p>
+\[A_\text{ost}=\Delta W_k+\Delta W_p+\Delta W_{pr}.\]
+<p>Če ni trenja, je mehanska energija ohranjena (npr. \(v=\sqrt{2gh}\) na dnu gladkega klanca). Trenje opravi negativno delo \(A_{tr}=-k_{tr}Ns\).</p>
+<h3>Trki</h3>
+<ul>
+<li><strong>Popolnoma neprožni trk</strong> (telesi se sprimeta): ohranja se le \(G\): \(v=\dfrac{m_1v_1+m_2v_2}{m_1+m_2}\). Del kinetične energije preide v notranjo.</li>
+<li><strong>Prožni trk</strong>: ohranjata se \(G\) in \(W_k\). Za centralni trk z mirujočim drugim telesom:
+\[v_1'=\frac{m_1-m_2}{m_1+m_2}v_1,\qquad v_2'=\frac{2m_1}{m_1+m_2}v_1.\]</li>
+</ul>
+<p>Moč: \(P=dA/dt=Fv\).</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Gibalna količina</b>\(G=mv,\ \ \int F\,dt=\Delta G\)</div>
+  <div class="f"><b>Energije</b>\(W_k=\dfrac{mv^2}{2},\ W_p=mgh,\ W_{pr}=\dfrac{kx^2}{2}\)</div>
+  <div class="f"><b>Delo, moč</b>\(A=\int\vec F\cdot d\vec s,\ \ P=\dfrac{dA}{dt}=Fv\)</div>
+  <div class="f"><b>Izrek o energiji</b>\(A_\text{ost}=\Delta W_k+\Delta W_p+\Delta W_{pr}\)</div>
+  <div class="f"><b>Neprožni trk</b>\(m_1v_1+m_2v_2=(m_1+m_2)v\)</div>
+  <div class="f"><b>Prožni trk</b>\(m_1v_1+m_2v_2=m_1v_1'+m_2v_2'\)<br>\(m_1v_1^2+m_2v_2^2=m_1v_1'^2+m_2v_2'^2\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-k22-4">
+  <div class="task-head"><span class="src">Kolokvij 2022/23 · 4. naloga</span></div>
+  <div class="q"><p>Klada z maso \(m_1=2\ \mathrm{kg}\) se s hitrostjo \(v_1=15\ \mathrm{m/s}\) zaleti v mirujočo klado z maso \(m_2=1\ \mathrm{kg}\). Kladi se sprimeta in se zaradi trenja ustavita na razdalji \(15\ \mathrm m\). Kolikšen je koeficient trenja?</p></div>
+  <div class="checks" data-checks='[["hitrost po trku v",10,"m/s"],["k_tr",0.340,""]]'></div>
+  <ol class="steps">
+    <li>Trk je popolnoma neprožen — ohrani se gibalna količina: \(m_1v_1=(m_1+m_2)v\Rightarrow v=\dfrac{2\cdot15}{3}\ \mathrm{m/s}\).</li>
+    <li>Po trku trenje opravi delo, ki porabi vso kinetično energijo: \(\tfrac12(m_1+m_2)v^2=k_{tr}(m_1+m_2)g\,s\).</li>
+    <li>Masa se pokrajša: \(k_{tr}=\dfrac{v^2}{2gs}\). (Enako dobiš iz \(v^2=2as\) in \(a=k_{tr}g\).)</li>
+  </ol>
+  <div class="sol">\(v=10\ \mathrm{m/s}\), \(k_{tr}=\dfrac{100}{2\cdot9{,}8\cdot15}=0{,}34\).</div>
+</article>
+
+<article class="task" id="t-k24-2">
+  <div class="task-head"><span class="src">Kolokvij 2024/25 · 2. naloga</span></div>
+  <div class="q"><p>Na zračni klopi (brez trenja) trčita jahača z enako maso. Rumeni ima pred trkom hitrost \(v_0\) proti desni, vijolični miruje. Izpeljite hitrosti obeh po (prožnem) trku.</p></div>
+  <ol class="steps">
+    <li>Ohranitev gibalne količine: \(mv_0=mv_1'+mv_2'\Rightarrow v_0=v_1'+v_2'\).</li>
+    <li>Ohranitev kinetične energije (prožni trk): \(\tfrac12mv_0^2=\tfrac12mv_1'^2+\tfrac12mv_2'^2\Rightarrow v_0^2=v_1'^2+v_2'^2\).</li>
+    <li>Prvo enačbo kvadriramo: \(v_0^2=v_1'^2+2v_1'v_2'+v_2'^2\). Odštejemo drugo: \(2v_1'v_2'=0\).</li>
+    <li>Ena od hitrosti je nič. \(v_2'=0\) bi pomenilo, da rumeni jahač gre skozi vijoličnega — nefizikalno. Torej \(v_1'=0\) in \(v_2'=v_0\).</li>
+  </ol>
+  <div class="sol">\(v_1'=0,\ \ v_2'=v_0\) — jahača si <strong>izmenjata hitrosti</strong>. (Če bi bil trk popolnoma neprožen, npr. z ježkom, bi oba nadaljevala s \(v_0/2\).)</div>
+</article>
+
+<article class="task" id="t-i25-3">
+  <div class="task-head"><span class="src">Izpit 2025/26 · 3. naloga</span></div>
+  <div class="q"><p>Voziček z maso \(1\ \mathrm{kg}\) se brez trenja giblje s hitrostjo \(5\ \mathrm{m/s}\) in idealno prožno trči v mirujoč voziček z maso \(3\ \mathrm{kg}\). Kolikšni sta hitrosti po trku? Se prvi voziček po trku giblje v isto ali nasprotno smer?</p></div>
+  <div class="checks" data-checks='[["v₁′ (s predznakom)",-2.5,"m/s"],["v₂′",2.5,"m/s"]]'></div>
+  <ol class="steps">
+    <li>Enačbi: \(m_1v_1=m_1v_1'+m_2v_2'\) in \(m_1v_1^2=m_1v_1'^2+m_2v_2'^2\).</li>
+    <li>Preuredimo: \(m_1(v_1-v_1')=m_2v_2'\) in \(m_1(v_1-v_1')(v_1+v_1')=m_2v_2'^2\). Delimo: \(v_1+v_1'=v_2'\).</li>
+    <li>Vstavimo nazaj v prvo enačbo in dobimo \(v_1'=\dfrac{m_1-m_2}{m_1+m_2}v_1\), \(v_2'=\dfrac{2m_1}{m_1+m_2}v_1\).</li>
+    <li>Številke: \(v_1'=\dfrac{1-3}{4}\cdot5\), \(v_2'=\dfrac{2}{4}\cdot5\).</li>
+  </ol>
+  <div class="sol">\(v_1'=-2{,}5\ \mathrm{m/s}\) (odbije se — giblje se v <strong>nasprotno</strong> smer), \(v_2'=2{,}5\ \mathrm{m/s}\). Kontrola energije: \(12{,}5\ \mathrm J=3{,}125\ \mathrm J+9{,}375\ \mathrm J\). ✓</div>
+</article>
+
+<article class="task" id="t-i24-3">
+  <div class="task-head"><span class="src">Izpit 2024/25 · 3. naloga</span></div>
+  <div class="q"><p>Utež z maso \(5\ \mathrm{kg}\) spustimo s \(3\ \mathrm m\) visokega zaledenelega klanca. Na ravnini trči v utež z maso \(8\ \mathrm{kg}\) in se odbije nazaj s hitrostjo \(1\ \mathrm{m/s}\). Kolikšno hitrost ima po trku druga utež? Do trka trenje zanemarimo. Druga utež nato pride na podlago s koeficientom trenja \(0{,}15\). Kolikšno razdaljo prepotuje, preden se ustavi?</p></div>
+  <div class="checks" data-checks='[["v₁ pred trkom",7.672,"m/s"],["v₂′",5.42,"m/s"],["razdalja s",9.98,"m"]]'></div>
+  <ol class="steps">
+    <li>Ohranitev energije na klancu (brez trenja): \(m_1gh=\tfrac12m_1v_1^2\Rightarrow v_1=\sqrt{2gh}=\sqrt{2\cdot9{,}81\cdot3}\).</li>
+    <li>Ohranitev gibalne količine pri trku (smer proti drugi uteži je pozitivna, odboj nazaj je \(-1\ \mathrm{m/s}\)): \(m_1v_1=m_1(-1\ \mathrm{m/s})+m_2v_2'\).</li>
+    <li>\(v_2'=\dfrac{m_1v_1+m_1\cdot1}{m_2}=\dfrac{5\cdot7{,}67+5}{8}\ \mathrm{m/s}\).</li>
+    <li>Na hrapavi podlagi: \(\tfrac12m_2v_2'^2=k_{tr}m_2g\,s\Rightarrow s=\dfrac{v_2'^2}{2k_{tr}g}\).</li>
+  </ol>
+  <div class="sol">\(v_1=7{,}67\ \mathrm{m/s}\), \(v_2'=5{,}42\ \mathrm{m/s}\), \(s=9{,}98\ \mathrm m\approx10\ \mathrm m\). (Trk ni popolnoma prožen: \(W_k\) pade s 147 J na 120 J — zato ne smemo uporabiti enačb za prožni trk.)</div>
+</article>
+</section>
+
+<!-- ============================ 5. VRTENJE ============================ -->
+<section class="topic" id="vrtenje" data-title="5. Vrtenje togega telesa">
+<h2>5. Vrtenje togega telesa</h2>
+<div class="theory">
+<h3>Navor in vrtilna količina</h3>
+<p>Navor \(\vec M=\vec r\times\vec F\), velikost \(M=rF\sin\varphi\). Vrtilna količina točkastega telesa \(\vec\Gamma=\vec r\times\vec G\); za togo telo, ki se vrti okoli stalne osi, \(\Gamma=J\omega\).</p>
+<p><strong>Izrek o vrtilni količini:</strong> \(\sum\vec M_\text{zun}=\dfrac{d\vec\Gamma}{dt}\). Za vrtenje okoli stalne osi: \(M=J\alpha\) (analogija z \(F=ma\)).</p>
+<p><strong>Ohranitev vrtilne količine:</strong> če je vsota zunanjih navorov nič, je \(\Gamma=J\omega\) konstantna. Ko se \(J\) zmanjša (piruetka, mož na vrtljivem stolu pokrči roke), se \(\omega\) poveča.</p>
+<h3>Vztrajnostni moment</h3>
+<p>\(J=\sum m_ir_i^2=\int r^2\,dm\), kjer je \(r\) razdalja od osi. <strong>Steinerjev izrek:</strong> \(J=J^*+ma^2\), kjer je \(J^*\) vztrajnostni moment okoli vzporedne osi skozi težišče, \(a\) pa razdalja med osema.</p>
+<div class="tablewrap"><table>
+<tr><th>Telo</th><th>Os</th><th>\(J\)</th></tr>
+<tr><td>točkasto telo</td><td>na razdalji \(r\)</td><td>\(mr^2\)</td></tr>
+<tr><td>tanka palica</td><td>skozi težišče, ⟂</td><td>\(mL^2/12\)</td></tr>
+<tr><td>tanka palica</td><td>skozi krajišče, ⟂</td><td>\(mL^2/3\)</td></tr>
+<tr><td>poln valj</td><td>geometrijska os</td><td>\(mR^2/2\)</td></tr>
+<tr><td>tanek obroč / prazen valj</td><td>geometrijska os</td><td>\(mR^2\)</td></tr>
+<tr><td>polna krogla</td><td>skozi težišče</td><td>\(2mR^2/5\)</td></tr>
+</table></div>
+<h3>Energija vrtenja in kotaljenje</h3>
+<p>\(W_r=\dfrac{J\omega^2}{2}=\dfrac{\Gamma\omega}{2}=\dfrac{\Gamma^2}{2J}\). Pri kotaljenju brez podrsavanja je \(v_T=\omega R\) in \(W_k=\tfrac12mv_T^2+\tfrac12J^*\omega^2\) (translacija težišča + vrtenje okoli težišča).</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Navor</b>\(M=rF\sin\varphi=J\alpha\)</div>
+  <div class="f"><b>Vrtilna količina</b>\(\Gamma=J\omega,\ \ \int M\,dt=\Delta\Gamma\)</div>
+  <div class="f"><b>Vztrajnostni moment</b>\(J=\int r^2\,dm\)</div>
+  <div class="f"><b>Steinerjev izrek</b>\(J=J^*+ma^2\)</div>
+  <div class="f"><b>Rotacijska energija</b>\(W_r=\dfrac{J\omega^2}{2}=\dfrac{\Gamma\omega}{2}\)</div>
+  <div class="f"><b>Kotaljenje</b>\(v_T=\omega R\)<br>\(W_k=\dfrac{mv_T^2}{2}+\dfrac{J^*\omega^2}{2}\)</div>
+  <div class="f"><b>Delo, moč pri vrtenju</b>\(A=\int M\,d\varphi,\ \ P=M\omega\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-i23-4">
+  <div class="task-head"><span class="src">Izpit 2023/24 · 4. naloga</span></div>
+  <div class="q"><p>Mož sedi na vrtljivem stolu in se vrti s kotno hitrostjo \(4\ \mathrm{rad/s}\), njegova vrtilna količina je \(4\ \mathrm{kg\,m^2/s}\). Kolikšna je njegova rotacijska kinetična energija?</p></div>
+  <div class="checks" data-checks='[["W_r",8,"J"]]'></div>
+  <ol class="steps">
+    <li>\(W_r=\tfrac12J\omega^2\) in \(\Gamma=J\omega\).</li>
+    <li>Združimo: \(W_r=\tfrac12(J\omega)\omega=\tfrac12\Gamma\omega\). (Ali najprej \(J=\Gamma/\omega=1\ \mathrm{kg\,m^2}\).)</li>
+  </ol>
+  <div class="sol">\(W_r=\tfrac12\cdot4\cdot4=8\ \mathrm J\).</div>
+</article>
+
+<article class="task" id="t-k23-1">
+  <div class="task-head"><span class="src">Kolokvij 2023/24 · 1. naloga</span></div>
+  <div class="q"><p>Mož sedi na vrtljivem stolu in se vrti s kotno hitrostjo \(\omega_1\), v odročenih rokah drži uteži. Skupna začetna vrtilna količina je \(\Gamma_1\). Kolikšna je vrtilna kinetična energija (kot funkcija \(\omega_1\) in \(\Gamma_1\))? Mož nato pokrči roke in kotna hitrost se poveča na \(\omega_2\). Kolikšna je sedaj vrtilna kinetična energija? Trenje zanemarimo; rezultati naj bodo funkcije \(\Gamma_1,\omega_1,\omega_2\).</p></div>
+  <ol class="steps">
+    <li>\(W_1=\tfrac12J_1\omega_1^2\), \(\Gamma_1=J_1\omega_1\Rightarrow W_1=\tfrac12\Gamma_1\omega_1\).</li>
+    <li>Zunanjih navorov okoli navpične osi ni (teža in sila podlage sta vzporedni z osjo, trenje zanemarimo), zato se vrtilna količina ohrani: \(\Gamma_2=\Gamma_1\).</li>
+    <li>\(W_2=\tfrac12\Gamma_2\omega_2=\tfrac12\Gamma_1\omega_2\).</li>
+    <li>Ker je \(\omega_2\gt\omega_1\), je \(W_2\gt W_1\): razliko energije prispeva mož z delom mišic, ko vleče uteži proti osi.</li>
+  </ol>
+  <div class="sol">\(W_1=\dfrac{\Gamma_1\omega_1}{2},\qquad W_2=\dfrac{\Gamma_1\omega_2}{2},\qquad \dfrac{W_2}{W_1}=\dfrac{\omega_2}{\omega_1}\gt1.\)</div>
+</article>
+
+<article class="task" id="t-k25-2">
+  <div class="task-head"><span class="src">Kolokvij 2025/26 · 2. naloga</span></div>
+  <div class="q"><p>Študent se vrti na vrtljivem stolu z iztegnjenimi rokami, v katerih drži uteži. Nato pokrči roke in uteži potegne k telesu. Ali se kotna hitrost poveča ali zmanjša? Odgovor utemeljite z enačbami in besedilom. Trenje v ležaju zanemarimo.</p></div>
+  <ol class="steps">
+    <li>Izrek o vrtilni količini za sistem študent + stol + uteži: \(\sum M_\text{zun}=\dfrac{d\Gamma}{dt}\).</li>
+    <li>Zunanje sile so teža (vzporedna z osjo → ni navora okoli osi) in sila ležaja (deluje na osi → ročica 0). Trenje zanemarimo. Torej \(\sum M_\text{zun}=0\Rightarrow\Gamma=J\omega=\text{konst.}\)</li>
+    <li>Vztrajnostni moment: \(J=J_\text{stol+študent}+2m_ur^2\). Ko študent pokrči roke, se razdalja uteži \(r\) od osi zmanjša, zato \(J_2\lt J_1\) (tudi roke same so bližje osi).</li>
+    <li>\(J_1\omega_1=J_2\omega_2\Rightarrow\omega_2=\dfrac{J_1}{J_2}\omega_1\gt\omega_1\).</li>
+  </ol>
+  <div class="sol">Kotna hitrost se <strong>poveča</strong>, ker se ohranja vrtilna količina \(\Gamma=J\omega\) (ni zunanjih navorov), vztrajnostni moment pa se zmanjša: \(\omega_2=\dfrac{J_1}{J_2}\omega_1\). Kinetična energija se poveča za delo, ki ga opravi študent.</div>
+</article>
+
+<article class="task" id="t-k23-2">
+  <div class="task-head"><span class="src">Kolokvij 2023/24 · 2. naloga</span></div>
+  <div class="q"><p>Vztrajnostni moment tanke palice (masa \(m\), dolžina \(L\)) okoli težiščne osi je \(mL^2/12\). a) S Steinerjevim pravilom izračunajte vztrajnostni moment okoli krajiščne osi. b) Kolikšen je ta moment, če na obeh koncih pritrdimo majhni svinčeni kroglici z maso \(m_1\) (točkasti telesi)? c) Kolikšen je, če kroglici obravnavamo kot krogli s polmerom \(R\) (\(J^*=2m_1R^2/5\))?</p></div>
+  <ol class="steps">
+    <li>a) Razdalja med težiščno in krajiščno osjo je \(L/2\): \(J=\dfrac{mL^2}{12}+m\Big(\dfrac L2\Big)^2=\dfrac{mL^2}{12}+\dfrac{3mL^2}{12}\).</li>
+    <li>b) Kroglica na osi prispeva \(m_1\cdot0^2=0\), kroglica na drugem koncu \(m_1L^2\). Vztrajnostni momenti se seštevajo.</li>
+    <li>c) Kroglica na osi (središče na osi): \(\tfrac25m_1R^2\). Kroglica na drugem koncu (središče na razdalji \(L\)), Steiner: \(\tfrac25m_1R^2+m_1L^2\).</li>
+  </ol>
+  <div class="sol">a) \(J=\dfrac{mL^2}{3}\) · b) \(J=\dfrac{mL^2}{3}+m_1L^2\) · c) \(J=\dfrac{mL^2}{3}+m_1L^2+\dfrac45m_1R^2\)<br><small>(Predpostavka: središči kroglic sta na koncih palice. Če bi bili kroglici nataknjeni zunaj koncev, bi bila razdalja \(L+R\) namesto \(L\).)</small></div>
+</article>
+
+<article class="task" id="t-k25-1">
+  <div class="task-head"><span class="src">Kolokvij 2025/26 · 1. naloga</span></div>
+  <div class="q"><p>Izpeljite vztrajnostni moment homogene palice s konstantnim presekom okoli osi, ki je za razdaljo \(D\) oddaljena od enega krajišča (\(D\lt L/2\)). Dolžina palice je \(L\), masa \(m\). Os je pravokotna na palico.</p></div>
+  <ol class="steps">
+    <li>Palico položimo na os \(x\), os vrtenja je pri \(x=0\). Palica sega od \(x=-D\) do \(x=L-D\). Element palice dolžine \(dx\) ima maso \(dm=\dfrac mL\,dx\).</li>
+    <li>\(J=\int r^2\,dm=\dfrac mL\int_{-D}^{L-D}x^2\,dx=\dfrac{m}{3L}\Big[(L-D)^3+D^3\Big]\).</li>
+    <li>Razvijemo: \((L-D)^3+D^3=L^3-3L^2D+3LD^2\). Delimo z \(3L\).</li>
+    <li>Kontrola s Steinerjem: težišče je pri \(L/2\), razdalja do osi je \(a=\tfrac L2-D\): \(J=\dfrac{mL^2}{12}+m\Big(\dfrac L2-D\Big)^2\) — dá isti izraz.</li>
+  </ol>
+  <div class="sol">\[J=m\Big(\frac{L^2}{3}-LD+D^2\Big)=\frac{mL^2}{12}+m\Big(\frac L2-D\Big)^2\]Preverba: \(D=0\Rightarrow mL^2/3\) (krajišče), \(D=L/2\Rightarrow mL^2/12\) (težišče). ✓</div>
+</article>
+
+<article class="task" id="t-i25-2">
+  <div class="task-head"><span class="src">Izpit 2025/26 · 2. naloga</span></div>
+  <div class="q"><p>Izpeljite izraz za kinetično energijo polnega homogenega valja z maso \(m\) in polmerom \(R\), ki se brez podrsavanja kotali navzdol po klancu, v trenutku, ko ima težišče hitrost \(v_T\).</p></div>
+  <ol class="steps">
+    <li>Gibanje togega telesa = premo gibanje težišča + vrtenje okoli težišča: \(W_k=\tfrac12mv_T^2+\tfrac12J^*\omega^2\).</li>
+    <li>Za poln valj okoli geometrijske osi: \(J^*=\int r^2dm=\tfrac12mR^2\).</li>
+    <li>Brez podrsavanja: točka dotika miruje, zato \(v_T=\omega R\Rightarrow\omega=v_T/R\).</li>
+    <li>\(W_k=\tfrac12mv_T^2+\tfrac12\cdot\tfrac12mR^2\cdot\dfrac{v_T^2}{R^2}=\tfrac12mv_T^2+\tfrac14mv_T^2\).</li>
+    <li>Alternativa: trenutna os vrtenja je v točki dotika; Steiner \(J_P=\tfrac12mR^2+mR^2=\tfrac32mR^2\), \(W_k=\tfrac12J_P\omega^2\) — isti rezultat.</li>
+  </ol>
+  <div class="sol">\[W_k=\frac34\,m\,v_T^2\]Tretjina energije je v vrtenju. (Iz \(mgh=\tfrac34mv_T^2\) sledi \(v_T=\sqrt{4gh/3}\), manj kot pri drsenju brez trenja.)</div>
+</article>
+</section>
+
+<!-- ============================ 6. NIHANJE ============================ -->
+<section class="topic" id="nihanje" data-title="6. Nihanje">
+<h2>6. Nihanje</h2>
+<div class="theory">
+<h3>Harmonično (nedušeno) nihanje</h3>
+<p>Če na telo deluje sila, sorazmerna odmiku in usmerjena proti ravnovesni legi, \(F=-kx\), dobimo iz 2. Newtonovega zakona diferencialno enačbo \(\ddot x=-\omega_0^2x\) z rešitvijo</p>
+\[x(t)=x_0\sin(\omega_0t+\delta),\quad v=x_0\omega_0\cos(\omega_0t+\delta),\quad a=-\omega_0^2x.\]
+<p>Lastna krožna frekvenca je \(\omega_0=2\pi/t_0\). Celotna energija je konstantna: \(W=\tfrac12kx_0^2=\tfrac12mv_0^2\) (\(v_0\) je največja hitrost).</p>
+<h3>Nihala</h3>
+<p>Vsako nihalo vodi do iste enačbe, razlikuje se le \(\omega_0\): <strong>vijačna vzmet</strong> \(\sqrt{k/m}\), <strong>polžasta (torzijska) vzmet</strong> \(\sqrt{D/J}\) (\(M=-D\varphi\)), <strong>matematično nihalo</strong> \(\sqrt{g/l}\), <strong>fizično nihalo</strong> \(\sqrt{mgr_T/J}\) (pri majhnih kotih, \(\sin\varphi\approx\varphi\)).</p>
+<h3>Dušeno in vsiljeno nihanje</h3>
+<p>Z linearnim uporom \(F_u=-\gamma v\) amplituda eksponentno pojema: \(x=x_0e^{-\beta t}\cos(\omega t)\), \(\beta=\gamma/2m\), \(\omega=\sqrt{\omega_0^2-\beta^2}\). Pri vsiljenem nihanju s silo \(F_0\sin\omega t\) je amplituda največja blizu \(\omega\approx\omega_0\) — <strong>resonanca</strong>.</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Rešitev</b>\(x=x_0\sin(\omega_0t+\delta)\)<br>\(\ddot x=-\omega_0^2x\)</div>
+  <div class="f"><b>Vijačna vzmet</b>\(t_0=2\pi\sqrt{\dfrac mk}\)</div>
+  <div class="f"><b>Polžasta vzmet</b>\(t_0=2\pi\sqrt{\dfrac JD}\)</div>
+  <div class="f"><b>Matematično nihalo</b>\(t_0=2\pi\sqrt{\dfrac lg}\)</div>
+  <div class="f"><b>Fizično nihalo</b>\(t_0=2\pi\sqrt{\dfrac{J}{mgr_T}}\)</div>
+  <div class="f"><b>Energija</b>\(W=\dfrac{kx_0^2}{2}=\dfrac{mv_0^2}{2}\)</div>
+  <div class="f"><b>Dušeno</b>\(x=x_0e^{-\beta t}\cos\omega t\)<br>\(\omega=\sqrt{\omega_0^2-\beta^2},\ \beta=\dfrac{\gamma}{2m}\)</div>
+  <div class="f"><b>Vsiljeno</b>\(x_0=\dfrac{F_0/m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}}\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-x-vzmet">
+  <div class="task-head"><span class="src extra">Dodatna vaja · vzmet</span></div>
+  <div class="q"><p>Utež z maso \(0{,}5\ \mathrm{kg}\) visi na vzmeti s koeficientom \(200\ \mathrm{N/m}\). Kolikšen je nihajni čas?</p></div>
+  <div class="checks" data-checks='[["t₀",0.3142,"s"]]'></div>
+  <ol class="steps">
+    <li>\(m\ddot x=-kx\Rightarrow\omega_0=\sqrt{k/m}\). (Teža samo premakne ravnovesno lego, na \(t_0\) ne vpliva.)</li>
+    <li>\(t_0=2\pi\sqrt{m/k}=2\pi\sqrt{0{,}5/200}\).</li>
+  </ol>
+  <div class="sol">\(t_0=0{,}314\ \mathrm s\) (\(\omega_0=20\ \mathrm{s^{-1}}\)).</div>
+</article>
+
+<article class="task" id="t-x-mat">
+  <div class="task-head"><span class="src extra">Dodatna vaja · matematično nihalo</span></div>
+  <div class="q"><p>Izpeljite nihajni čas matematičnega nihala dolžine \(l\) pri majhnih odmikih in ga izračunajte za \(l=1\ \mathrm m\).</p></div>
+  <div class="checks" data-checks='[["t₀",2.006,"s"]]'></div>
+  <ol class="steps">
+    <li>Navor teže okoli obesišča: \(M=-mgl\sin\varphi\). Vztrajnostni moment točkaste mase \(J=ml^2\).</li>
+    <li>\(M=J\ddot\varphi\Rightarrow ml^2\ddot\varphi=-mgl\sin\varphi\approx-mgl\varphi\) (majhni koti).</li>
+    <li>\(\ddot\varphi=-\dfrac gl\varphi\Rightarrow\omega_0=\sqrt{g/l}\), \(t_0=2\pi\sqrt{l/g}\).</li>
+  </ol>
+  <div class="sol">\(t_0=2\pi\sqrt{l/g}=2{,}01\ \mathrm s\) za \(l=1\ \mathrm m\).</div>
+</article>
+
+<article class="task" id="t-x-fiz">
+  <div class="task-head"><span class="src extra">Dodatna vaja · fizično nihalo</span></div>
+  <div class="q"><p>Tanka palica dolžine \(1\ \mathrm m\) niha okoli osi skozi eno krajišče. Kolikšen je nihajni čas pri majhnih odmikih?</p></div>
+  <div class="checks" data-checks='[["t₀",1.638,"s"]]'></div>
+  <ol class="steps">
+    <li>\(J=mL^2/3\) (Steiner), razdalja težišča od osi \(r_T=L/2\).</li>
+    <li>\(t_0=2\pi\sqrt{\dfrac{J}{mgr_T}}=2\pi\sqrt{\dfrac{mL^2/3}{mgL/2}}=2\pi\sqrt{\dfrac{2L}{3g}}\).</li>
+  </ol>
+  <div class="sol">\(t_0=1{,}64\ \mathrm s\) — enako kot matematično nihalo dolžine \(2L/3\).</div>
+</article>
+</section>
+
+<!-- ============================ 7. TEKOČINE ============================ -->
+<section class="topic" id="tekocine" data-title="7. Tekočine">
+<h2>7. Tekočine</h2>
+<div class="theory">
+<h3>Hidrostatika</h3>
+<p>Tlak \(p=F/S\). V mirujoči tekočini tlak narašča z globino: \(p=p_0+\rho gh\). <strong>Arhimedov zakon:</strong> na potopljeno telo deluje vzgon, enak teži izpodrinjene tekočine, \(F_{vzg}=\rho gV\).</p>
+<h3>Gibanje idealne tekočine</h3>
+<p><strong>Kontinuitetna enačba</strong> (nestisljiva tekočina): \(\Phi_V=S_1v_1=S_2v_2\) — kjer je cev ožja, je hitrost večja. <strong>Bernoullijeva enačba</strong> (ohranitev energije na enoto prostornine vzdolž tokovnice):</p>
+\[p_1+\frac{\rho v_1^2}{2}+\rho gh_1=p_2+\frac{\rho v_2^2}{2}+\rho gh_2.\]
+<p><strong>Venturijeva cev:</strong> v zožitvi je hitrost večja, zato je tlak manjši. Iz razlike tlakov (višin stolpcev) izračunamo pretok.</p>
+<h3>Viskozna tekočina</h3>
+<p>Viskozna (strižna) sila med plastmi: \(F=\eta S\dfrac{dv}{dz}\). Pri laminarnem toku skozi cev (Poiseuille–Hagen) je hitrostni profil paraboličen, pretok pa \(\Phi_V=\dfrac{\pi R^4\Delta p}{8\eta l}\) — zelo občutljiv na polmer (\(R^4\)).</p>
+<h3>Sile na telesa v tekočini</h3>
+<p><strong>Linearni (Stokesov) zakon upora</strong> pri majhnih hitrostih (\(Re\lt1\)): \(F_u=6\pi\eta rv\). <strong>Kvadratni zakon</strong> pri velikih hitrostih: \(F_u=\tfrac12c_u\rho Sv^2\). Reynoldsovo število \(Re=\rho vd/\eta\).</p>
+<h3>Površinska napetost</h3>
+<p>\(\gamma=\Delta W/\Delta S=F/l\). Laplaceova enačba za tlak v kapljici: \(\Delta p=2\gamma/R\) (milni mehurček ima dve površini: \(4\gamma/R\)). Kapilarni dvig: \(h=\dfrac{2\gamma\cos\theta}{\rho gr}\), kontaktni kot \(\theta\) določa Youngova enačba.</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Hidrostatični tlak</b>\(p=p_0+\rho gh\)</div>
+  <div class="f"><b>Vzgon</b>\(F_{vzg}=\rho gV\)</div>
+  <div class="f"><b>Kontinuiteta</b>\(\Phi_V=Sv,\ \ S_1v_1=S_2v_2\)</div>
+  <div class="f"><b>Bernoulli</b>\(p+\dfrac{\rho v^2}{2}+\rho gh=\text{konst.}\)</div>
+  <div class="f"><b>Viskoznost</b>\(\dfrac FS=\eta\dfrac{dv}{dz}\)</div>
+  <div class="f"><b>Poiseuille</b>\(v(r)=\dfrac{\Delta p}{4\eta l}(R^2-r^2)\)<br>\(\Phi_V=\dfrac{\pi R^4\Delta p}{8\eta l}\)</div>
+  <div class="f"><b>Upor</b>\(F_u=6\pi\eta rv\)<br>\(F_u=\tfrac12c_u\rho Sv^2\)</div>
+  <div class="f"><b>Končna hitrost kroglice</b>\(v=\dfrac{2r^2g(\rho_0-\rho)}{9\eta}\)</div>
+  <div class="f"><b>Površinska napetost</b>\(\Delta p=\dfrac{2\gamma}{R},\ \ h=\dfrac{2\gamma\cos\theta}{\rho gr}\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-i22-1">
+  <div class="task-head"><span class="src">Izpit 2022/23 · 1. naloga</span></div>
+  <div class="q"><p>V okviru Poiseuille–Hagenovega zakona izpeljite izraz za paraboličen profil hitrosti pri laminarnem toku kapljevine skozi dolgo tanko valjasto cev s polmerom \(R\) in dolžino \(L\). Razlika tlakov na koncih je \(\Delta p\), viskoznost \(\eta\).</p></div>
+  <ol class="steps">
+    <li>V cevi izberemo valjast element kapljevine s polmerom \(r\) (soosen s cevjo) in dolžino \(L\). Razlika tlakov ga potiska s silo \(F_p=\Delta p\,\pi r^2\).</li>
+    <li>Po plašču valja (\(S=2\pi rL\)) ga zavira počasnejša zunanja plast z viskozno silo \(F_{vis}=-\eta\,2\pi rL\,\dfrac{dv}{dr}\) (\(dv/dr\lt0\), zato je izraz pozitiven).</li>
+    <li>Tok je stacionaren (element se giblje enakomerno), zato sta sili enaki: \(\Delta p\,\pi r^2=-\eta\,2\pi rL\dfrac{dv}{dr}\Rightarrow dv=-\dfrac{\Delta p}{2\eta L}r\,dr\).</li>
+    <li>Integriramo od \(r\) do stene \(R\), kjer je hitrost nič (kapljevina se oprijema stene): \(\displaystyle\int_{v}^{0}dv=-\frac{\Delta p}{2\eta L}\int_r^R r\,dr\Rightarrow -v=-\frac{\Delta p}{4\eta L}(R^2-r^2)\).</li>
+    <li>(Pretok: \(\Phi_V=\int_0^R v(r)\,2\pi r\,dr=\tfrac12v_0\pi R^2=\dfrac{\pi R^4\Delta p}{8\eta L}\).)</li>
+  </ol>
+  <div class="sol">\[v(r)=\frac{\Delta p}{4\eta L}\big(R^2-r^2\big)=v_0\Big(1-\frac{r^2}{R^2}\Big),\qquad v_0=\frac{\Delta p\,R^2}{4\eta L}\]Paraboličen profil: največja hitrost na osi, nič ob steni.</div>
+</article>
+
+<article class="task" id="t-i22-2">
+  <div class="task-head"><span class="src">Izpit 2022/23 · 2. naloga</span></div>
+  <div class="q"><p>Izpeljite izraz za stacionarno (končno) hitrost kroglice s polmerom \(R\) in gostoto \(\rho_0\), ki pada v viskozni tekočini z gostoto \(\rho\) in viskoznostjo \(\eta\).</p></div>
+  <ol class="steps">
+    <li>Sile na kroglico (\(V=\tfrac43\pi R^3\)): teža \(F_g=\rho_0Vg\) navzdol, vzgon \(F_{vzg}=\rho Vg\) navzgor, upor po Stokesu \(F_u=6\pi\eta Rv\) navzgor.</li>
+    <li>Na začetku kroglica pospešuje; upor raste s hitrostjo. Stacionarna hitrost je dosežena, ko je vsota sil nič: \(\rho_0Vg-\rho Vg-6\pi\eta Rv=0\).</li>
+    <li>\(v=\dfrac{(\rho_0-\rho)\tfrac43\pi R^3g}{6\pi\eta R}\) — pokrajšamo.</li>
+  </ol>
+  <div class="sol">\[v=\frac{2R^2g(\rho_0-\rho)}{9\eta}\]Če je \(\rho_0\lt\rho\), je \(v\lt0\) — kroglica se dviga. Formula velja, ko je \(Re\lt1\) (linearni zakon upora).</div>
+</article>
+
+<article class="task" id="t-i25-4">
+  <div class="task-head"><span class="src">Izpit 2025/26 · 4. naloga</span></div>
+  <div class="q"><p>S kolikšno hitrostjo pada v kapljevini z gostoto \(800\ \mathrm{kg/m^3}\) in viskoznostjo \(2\ \mathrm{kg/(m\,s)}\) kroglica s polmerom \(0{,}5\ \mathrm{mm}\) in gostoto \(2700\ \mathrm{kg/m^3}\)? Velja linearni zakon upora.</p></div>
+  <div class="checks" data-checks='[["v",5.178e-4,"m/s"]]'></div>
+  <ol class="steps">
+    <li>Uporabimo izpeljavo iz prejšnje naloge: \(v=\dfrac{2r^2g(\rho_0-\rho)}{9\eta}\).</li>
+    <li>\(v=\dfrac{2\cdot(5\cdot10^{-4})^2\cdot9{,}81\cdot1900}{9\cdot2}\ \mathrm{m/s}\). Pazi na pretvorbo mm → m!</li>
+    <li>Kontrola: \(Re=\rho v\,2r/\eta\approx2\cdot10^{-4}\ll1\), linearni zakon je upravičen.</li>
+  </ol>
+  <div class="sol">\(v=5{,}2\cdot10^{-4}\ \mathrm{m/s}\approx0{,}52\ \mathrm{mm/s}\).</div>
+</article>
+
+<article class="task" id="t-i23-1">
+  <div class="task-head"><span class="src">Izpit 2023/24 · 1. naloga</span></div>
+  <div class="q"><p>Tekočina teče skozi vodoravno Venturijevo cev s tremi navpičnimi stolpci (levi, srednji v zožitvi, desni). Desni stolpec je višji od levega, srednji je najnižji. V katero smer teče tekočina? Zakaj je srednji stolpec najnižji? Oba odgovora utemeljite.</p>
+  <figure><svg viewBox="0 0 340 160" width="340" aria-label="Venturijeva cev">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M10 120 H120 L150 128 H190 L220 120 H330"/><path d="M10 150 H120 L150 142 H190 L220 150 H330"/>
+      <path d="M55 120 V20 M70 120 V20"/><path d="M163 128 V20 M177 128 V20"/><path d="M270 120 V20 M285 120 V20"/>
+    </g>
+    <rect x="56" y="70" width="13" height="50" fill="#2f5bd3" opacity=".7"/>
+    <rect x="164" y="98" width="12" height="30" fill="#2f5bd3" opacity=".7"/>
+    <rect x="271" y="52" width="13" height="68" fill="#2f5bd3" opacity=".7"/>
+    <text x="38" y="14" font-size="12" fill="currentColor">levi</text><text x="150" y="14" font-size="12" fill="currentColor">srednji</text><text x="262" y="14" font-size="12" fill="currentColor">desni</text>
+  </svg></figure></div>
+  <ol class="steps">
+    <li>Višina stolpca meri statični tlak v cevi na tistem mestu: \(p=p_0+\rho gh\). Višji stolpec = večji tlak.</li>
+    <li>Levi in desni del cevi imata enak presek, zato (kontinuiteta) enako hitrost. Po Bernoulliju bi morala imeti tudi enak tlak — razlika nastane zaradi <strong>viskoznega trenja</strong>: tlak vzdolž toka pada.</li>
+    <li>Tekočina teče od večjega tlaka proti manjšemu, torej od desnega (višji stolpec) proti levemu.</li>
+    <li>V zožitvi: \(S_2\lt S_1\Rightarrow v_2=v_1S_1/S_2\gt v_1\). Bernoulli (vodoravna cev): \(p_2=p_1-\tfrac12\rho(v_2^2-v_1^2)\lt p_1\).</li>
+  </ol>
+  <div class="sol">Tekočina teče <strong>z desne proti levi</strong>, ker tlak zaradi viskoznih izgub pada v smeri toka (desno je tlak večji). Srednji stolpec je najnižji, ker je v zožitvi hitrost največja (\(S_1v_1=S_2v_2\)), po Bernoullijevi enačbi pa večji hitrosti pripada manjši tlak.</div>
+</article>
+
+<article class="task" id="t-i24-2">
+  <div class="task-head"><span class="src">Izpit 2024/25 · 2. naloga</span></div>
+  <div class="q"><p>Z enačbami razložite, kako s pomočjo Venturijeve cevi izračunamo volumski pretok skozi cev (voda teče z desne proti levi).</p></div>
+  <ol class="steps">
+    <li>Označimo široki del (presek \(S_1\), hitrost \(v_1\), tlak \(p_1\)) in zožitev (\(S_2,v_2,p_2\)). Kontinuitetna enačba: \(S_1v_1=S_2v_2\Rightarrow v_1=v_2\dfrac{S_2}{S_1}\).</li>
+    <li>Bernoullijeva enačba (vodoravna cev, \(h_1=h_2\)): \(p_1+\tfrac12\rho v_1^2=p_2+\tfrac12\rho v_2^2\Rightarrow p_1-p_2=\tfrac12\rho(v_2^2-v_1^2)\).</li>
+    <li>Razliko tlakov izmerimo z razliko višin stolpcev: \(\Delta p=p_1-p_2=\rho g\Delta h\).</li>
+    <li>Vstavimo \(v_1\): \(\Delta p=\tfrac12\rho v_2^2\Big(1-\dfrac{S_2^2}{S_1^2}\Big)\Rightarrow v_2=S_1\sqrt{\dfrac{2\Delta p}{\rho(S_1^2-S_2^2)}}\).</li>
+    <li>Pretok \(\Phi_V=S_2v_2\).</li>
+  </ol>
+  <div class="sol">\[\Phi_V=S_1S_2\sqrt{\frac{2\Delta p}{\rho\,(S_1^2-S_2^2)}}=S_1S_2\sqrt{\frac{2g\Delta h}{S_1^2-S_2^2}}\]Pretok določimo iz izmerjene razlike višin stolpcev in znanih presekov.</div>
+</article>
+
+<article class="task" id="t-x-hidro">
+  <div class="task-head"><span class="src extra">Dodatna vaja · hidrostatika</span></div>
+  <div class="q"><p>Kolikšen je tlak v jezeru na globini \(10\ \mathrm m\)? Zračni tlak je \(1{,}013\cdot10^5\ \mathrm{Pa}\).</p></div>
+  <div class="checks" data-checks='[["p",199400,"Pa"]]'></div>
+  <ol class="steps"><li>\(p=p_0+\rho gh=101\,300+1000\cdot9{,}81\cdot10\ \mathrm{Pa}\).</li></ol>
+  <div class="sol">\(p=1{,}99\cdot10^5\ \mathrm{Pa}\approx2\ \mathrm{bar}\) — vsakih 10 m vode doda približno 1 bar.</div>
+</article>
+
+<article class="task" id="t-x-kapil">
+  <div class="task-head"><span class="src extra">Dodatna vaja · kapilarni dvig</span></div>
+  <div class="q"><p>Kako visoko se dvigne voda (\(\gamma=0{,}073\ \mathrm{N/m}\), popolna omočljivost \(\theta=0\)) v kapilari s polmerom \(0{,}5\ \mathrm{mm}\)?</p></div>
+  <div class="checks" data-checks='[["h",0.02977,"m"]]'></div>
+  <ol class="steps">
+    <li>Sila površinske napetosti po obodu drži težo stolpca: \(2\pi r\gamma\cos\theta=\rho g\pi r^2h\).</li>
+    <li>\(h=\dfrac{2\gamma\cos\theta}{\rho gr}=\dfrac{2\cdot0{,}073}{1000\cdot9{,}81\cdot5\cdot10^{-4}}\).</li>
+  </ol>
+  <div class="sol">\(h=2{,}98\cdot10^{-2}\ \mathrm m\approx3\ \mathrm{cm}\).</div>
+</article>
+</section>
+
+<!-- ============================ 8. VALOVANJE ============================ -->
+<section class="topic" id="valovanje" data-title="8. Valovanje">
+<h2>8. Mehansko valovanje</h2>
+<div class="theory">
+<p>Potujoče valovanje: \(y(x,t)=A\sin(\omega t-kx)\), valovno število \(k=2\pi/\lambda\), hitrost \(c=\lambda\nu=\omega/k\). Hitrost transverzalnega valovanja po napeti struni \(c=\sqrt{F/\mu}\) (\(\mu\) je masa na enoto dolžine).</p>
+<p><strong>Stoječe valovanje</strong> nastane s superpozicijo dveh nasprotno potujočih valovanj. Na struni, vpeti na obeh koncih, se mora v dolžino \(L\) prilegati celo število polvalov: \(\lambda_n=2L/n\), \(\nu_n=nc/(2L)\).</p>
+<p><strong>Zvok</strong> je longitudinalno valovanje: v trdnini \(c=\sqrt{E/\rho}\), v kapljevini \(c=\sqrt{1/(\chi\rho)}\), v plinu \(c=\sqrt{\kappa RT/M}\). Jakost zvoka v decibelih \(10\log(j/j_0)\). <strong>Dopplerjev pojav:</strong> premikajoči se izvor \(\nu=\nu_0/(1\mp v_i/c)\), premikajoči se opazovalec \(\nu=\nu_0(1\pm v_o/c)\) (zgornji znak: približevanje).</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Valovanje</b>\(c=\lambda\nu=\dfrac\omega k\)<br>\(y=A\sin(\omega t-kx)\)</div>
+  <div class="f"><b>Struna</b>\(c=\sqrt{\dfrac F\mu}\)<br>\(\nu_n=\dfrac{nc}{2L}\)</div>
+  <div class="f"><b>Zvok</b>\(c=\sqrt{\dfrac E\rho},\ \ c=\sqrt{\dfrac{\kappa RT}{M}}\)</div>
+  <div class="f"><b>Doppler</b>\(\nu=\dfrac{\nu_0}{1\mp v_i/c},\ \ \nu=\nu_0\Big(1\pm\dfrac{v_o}{c}\Big)\)</div>
+</div>
+<h3>Naloge</h3>
+<article class="task" id="t-x-struna">
+  <div class="task-head"><span class="src extra">Dodatna vaja · struna</span></div>
+  <div class="q"><p>Struna z maso na enoto dolžine \(0{,}01\ \mathrm{kg/m}\) je napeta s silo \(100\ \mathrm N\) in vpeta med točkama na razdalji \(0{,}5\ \mathrm m\). Kolikšna je hitrost valovanja in osnovna lastna frekvenca?</p></div>
+  <div class="checks" data-checks='[["c",100,"m/s"],["ν₁",100,"Hz"]]'></div>
+  <ol class="steps">
+    <li>\(c=\sqrt{F/\mu}=\sqrt{100/0{,}01}\).</li>
+    <li>Osnovno nihanje: en polval, \(\lambda_1=2L=1\ \mathrm m\), \(\nu_1=c/\lambda_1\).</li>
+  </ol>
+  <div class="sol">\(c=100\ \mathrm{m/s}\), \(\nu_1=100\ \mathrm{Hz}\).</div>
+</article>
+</section>
+
+<!-- ============================ 9. TERMODINAMIKA ============================ -->
+<section class="topic" id="termo" data-title="9. Termodinamika">
+<h2>9. Termodinamika (toplota)</h2>
+<div class="theory">
+<h3>Idealni plin</h3>
+<p>Plinska enačba \(pV=nRT=\dfrac mMRT=NkT\), \(R=8{,}314\ \mathrm{J/(mol\,K)}\). Povprečna kinetična energija molekule \(\overline{W_k}=\tfrac32kT\) (enoatomni plin). Notranja energija \(W_n=nc_vT\) — za idealni plin odvisna <strong>samo od temperature</strong>.</p>
+<h3>1. zakon termodinamike</h3>
+<p>V konvenciji predmeta: \(\Delta W_n=A+Q\), kjer je \(A=-\int p\,dV\) delo, ki ga plin <em>prejme</em>, \(Q\) pa prejeta toplota. Pri razpenjanju je \(A\lt0\) (plin delo odda). Delo, ki ga opravi plin, je ploščina pod krivuljo v diagramu \(p(V)\).</p>
+<div class="tablewrap"><table>
+<tr><th>Proces</th><th>Pogoj</th><th>Delo \(A\)</th><th>Toplota \(Q\)</th></tr>
+<tr><td>izohorni</td><td>\(V\) = konst., \(p/T\) = konst.</td><td>0</td><td>\(mc_v\Delta T\)</td></tr>
+<tr><td>izobarni</td><td>\(p\) = konst., \(V/T\) = konst.</td><td>\(-p(V_2-V_1)\)</td><td>\(mc_p\Delta T\)</td></tr>
+<tr><td>izotermni</td><td>\(T\) = konst., \(pV\) = konst.</td><td>\(-p_1V_1\ln\dfrac{V_2}{V_1}\)</td><td>\(-A\)</td></tr>
+<tr><td>adiabatni</td><td>\(pV^\kappa\) = konst.</td><td>\(\Delta W_n\)</td><td>0</td></tr>
+</table></div>
+<p>\(\kappa=c_p/c_v\): \(5/3\) za enoatomni, \(7/5\) za dvoatomni plin; \(c_p-c_v=R/M\).</p>
+<h3>Toplotni stroji, entropija, prenos toplote</h3>
+<p>Izkoristek toplotnega stroja \(\eta=\dfrac{|A|}{Q_\text{dov}}=1-\dfrac{|Q_\text{odv}|}{Q_\text{dov}}\); največji (Carnotov) \(\eta=1-T_2/T_1\). Entropija \(\Delta S\ge\int dQ/T\). Prevajanje toplote \(P=\lambda S\dfrac{T_1-T_2}{d}\). Toplotno raztezanje \(\Delta l=\alpha l\Delta T\), \(\Delta V=\beta V\Delta T\), \(\beta=3\alpha\).</p>
+</div>
+<h3>Formule</h3>
+<div class="formulas">
+  <div class="f"><b>Plinska enačba</b>\(pV=nRT=\dfrac mMRT\)</div>
+  <div class="f"><b>1. zakon</b>\(\Delta W_n=A+Q,\ \ A=-\int p\,dV\)</div>
+  <div class="f"><b>Notranja energija</b>\(\Delta W_n=mc_v\Delta T\)</div>
+  <div class="f"><b>Izotermno delo</b>\(A=-p_1V_1\ln\dfrac{V_2}{V_1}\)</div>
+  <div class="f"><b>Adiabata</b>\(pV^\kappa=\text{konst.},\ TV^{\kappa-1}=\text{konst.}\)</div>
+  <div class="f"><b>Izkoristek</b>\(\eta=\dfrac{|A|}{Q_\text{dov}},\ \eta_C=1-\dfrac{T_2}{T_1}\)</div>
+  <div class="f"><b>Prevajanje</b>\(P=\lambda S\dfrac{\Delta T}{d}\)</div>
+  <div class="f"><b>Raztezanje</b>\(\Delta l=\alpha l\Delta T,\ \Delta V=\beta V\Delta T\)</div>
+</div>
+<h3>Naloge</h3>
+
+<article class="task" id="t-i24-1">
+  <div class="task-head"><span class="src">Izpit 2024/25 · 1. naloga</span></div>
+  <div class="q"><p>Izračunajte delo pri izotermnem razpenjanju idealnega plina, ko se volumen poveča od \(V_1\) do \(V_2\).</p>
+  <figure><svg viewBox="0 0 260 170" width="260" aria-label="Izoterma v p-V diagramu">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M30 150 V10 M30 150 H245"/><path d="M50 20 Q90 110 230 128"/>
+    </g>
+    <path d="M70 61 Q110 116 140 117 V150 H70 Z" fill="#2f5bd3" opacity=".18"/>
+    <g stroke="currentColor" stroke-dasharray="4 4"><line x1="70" y1="61" x2="70" y2="150"/><line x1="140" y1="117" x2="140" y2="150"/></g>
+    <circle cx="70" cy="61" r="4" fill="currentColor"/><circle cx="140" cy="117" r="4" fill="currentColor"/>
+    <g font-size="13" fill="currentColor"><text x="12" y="16">p</text><text x="236" y="166">V</text><text x="64" y="166">V₁</text><text x="134" y="166">V₂</text><text x="76" y="58">1</text><text x="146" y="112">2</text></g>
+  </svg></figure></div>
+  <ol class="steps">
+    <li>Delo, ki ga prejme plin: \(A=-\int_{V_1}^{V_2}p\,dV\). Pri izotermnem procesu tlak ni konstanten, zato ga izrazimo z volumnom.</li>
+    <li>Iz plinske enačbe pri \(T=\) konst.: \(p=\dfrac{nRT}{V}=\dfrac{p_1V_1}{V}\).</li>
+    <li>\(A=-p_1V_1\displaystyle\int_{V_1}^{V_2}\frac{dV}{V}=-p_1V_1\big[\ln V\big]_{V_1}^{V_2}\).</li>
+    <li>Ker je \(T\) konstantna, je \(\Delta W_n=0\), zato po 1. zakonu \(Q=-A\).</li>
+  </ol>
+  <div class="sol">\[A=-p_1V_1\ln\frac{V_2}{V_1}=-nRT\ln\frac{V_2}{V_1}\lt0\]Plin pri razpenjanju odda delo \(nRT\ln(V_2/V_1)\) (osenčena ploščina pod izotermo) in prejme enako toploto \(Q=p_1V_1\ln(V_2/V_1)\gt0\).</div>
+</article>
+
+<article class="task" id="t-x-izot">
+  <div class="task-head"><span class="src extra">Dodatna vaja · izotermni proces</span></div>
+  <div class="q"><p>En mol idealnega plina pri \(300\ \mathrm K\) se izotermno razpne na dvakratni volumen. Koliko dela odda plin?</p></div>
+  <div class="checks" data-checks='[["oddano delo",1729,"J"]]'></div>
+  <ol class="steps"><li>\(|A|=nRT\ln\dfrac{V_2}{V_1}=1\cdot8{,}314\cdot300\cdot\ln2\).</li></ol>
+  <div class="sol">Plin odda \(1{,}73\ \mathrm{kJ}\) dela (\(A=-1{,}73\ \mathrm{kJ}\)) in prejme enako toploto.</div>
+</article>
+
+<article class="task" id="t-x-adiab">
+  <div class="task-head"><span class="src extra">Dodatna vaja · adiabatni proces</span></div>
+  <div class="q"><p>Zrak (\(\kappa=1{,}4\)) s temperaturo \(300\ \mathrm K\) adiabatno stisnemo na polovico prvotnega volumna. Kolikšna je končna temperatura?</p></div>
+  <div class="checks" data-checks='[["T₂",395.9,"K"]]'></div>
+  <ol class="steps">
+    <li>Pri adiabatni spremembi velja \(TV^{\kappa-1}=\) konst.: \(T_1V_1^{\kappa-1}=T_2V_2^{\kappa-1}\).</li>
+    <li>\(T_2=T_1\Big(\dfrac{V_1}{V_2}\Big)^{\kappa-1}=300\cdot2^{0{,}4}\).</li>
+  </ol>
+  <div class="sol">\(T_2=396\ \mathrm K\approx123\ ^\circ\mathrm C\). Delo stiskanja (\(Q=0\)) se v celoti pretvori v notranjo energijo.</div>
+</article>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='mt-skripta-done-v1';
+  var store={};
+  try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){store={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+
+  var tasks=[].slice.call(document.querySelectorAll('.task'));
+
+  function norm(s){return String(s).trim().replace(/\s/g,'').replace(',','.').replace(/·10\^?/,'e').replace(/x10\^?/i,'e').replace(/\*10\^?/,'e');}
+  function fmt(v){return Math.abs(v)>=1e4||Math.abs(v)<1e-2?v.toExponential(3).replace('.',','):String(+v.toPrecision(4)).replace('.',',');}
+
+  tasks.forEach(function(t){
+    // checkbox "rešeno"
+    var head=t.querySelector('.task-head');
+    var lab=document.createElement('label'); lab.className='done';
+    var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!store[t.id];
+    lab.appendChild(cb); lab.appendChild(document.createTextNode('rešeno'));
+    head.appendChild(lab);
+    t.classList.toggle('is-done',cb.checked);
+    cb.addEventListener('change',function(){store[t.id]=cb.checked; if(!cb.checked) delete store[t.id]; save(); t.classList.toggle('is-done',cb.checked); updateProgress();});
+
+    // numeric checks
+    var ch=t.querySelector('.checks');
+    if(ch){
+      var list=[]; try{list=JSON.parse(ch.getAttribute('data-checks'));}catch(e){}
+      list.forEach(function(item){
+        var row=document.createElement('div'); row.className='check';
+        var l=document.createElement('span'); l.className='lbl'; l.textContent=item[0]+' =';
+        var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.placeholder='tvoj rezultat'; inp.setAttribute('aria-label',item[0]);
+        var u=document.createElement('span'); u.className='unit'; u.textContent=item[2];
+        var b=document.createElement('button'); b.textContent='Preveri';
+        var fb=document.createElement('span'); fb.className='fb';
+        function check(){
+          var x=parseFloat(norm(inp.value)), v=item[1];
+          if(isNaN(x)){fb.className='fb warn'; fb.textContent='Vpiši število (npr. 3,4 ali 4,46e7).'; return;}
+          var tol=item[3]||0.02, err=Math.abs(x-v)/Math.max(Math.abs(v),1e-12);
+          if(err<=tol){fb.className='fb ok'; fb.textContent='✓ Pravilno!';}
+          else if(Math.abs(Math.abs(x)-Math.abs(v))/Math.abs(v)<=tol){fb.className='fb warn'; fb.textContent='Velikost je prava — preveri predznak/smer.';}
+          else{var r=x/v, p=Math.round(Math.log10(Math.abs(r)));
+            if(p!==0 && Math.abs(Math.abs(r)/Math.pow(10,p)-1)<=tol){fb.className='fb warn'; fb.textContent='Skoraj — preveri enote (red velikosti se ne ujema).';}
+            else{fb.className='fb bad'; fb.textContent='✗ Ni še prav. Poskusi znova ali odpri naslednji korak.';}}
+        }
+        b.addEventListener('click',check);
+        inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+        row.appendChild(l);row.appendChild(inp);row.appendChild(u);row.appendChild(b);row.appendChild(fb);
+        ch.appendChild(row);
+      });
+    }
+
+    // buttons
+    var steps=[].slice.call(t.querySelectorAll('ol.steps li'));
+    var sol=t.querySelector('.sol');
+    steps.forEach(function(li){li.classList.add('hid');});
+    var bar=document.createElement('div'); bar.className='btns';
+    var bStep=document.createElement('button'); bStep.textContent='Namig: naslednji korak (0/'+steps.length+')';
+    var bAll=document.createElement('button'); bAll.textContent='Celoten postopek';
+    var bSol=document.createElement('button'); bSol.className='primary'; bSol.textContent='Pokaži rešitev';
+    function refresh(){
+      var shown=steps.filter(function(li){return !li.classList.contains('hid');}).length;
+      bStep.textContent= shown<steps.length ? 'Namig: naslednji korak ('+shown+'/'+steps.length+')' : 'Skrij postopek';
+      bAll.style.display= shown<steps.length ? '' : 'none';
+    }
+    bStep.addEventListener('click',function(){
+      var next=steps.filter(function(li){return li.classList.contains('hid');})[0];
+      if(next){next.classList.remove('hid');} else {steps.forEach(function(li){li.classList.add('hid');});}
+      refresh();
+    });
+    bAll.addEventListener('click',function(){steps.forEach(function(li){li.classList.remove('hid');}); refresh();});
+    bSol.addEventListener('click',function(){var s=sol.classList.toggle('show'); bSol.textContent=s?'Skrij rešitev':'Pokaži rešitev';});
+    if(steps.length){bar.appendChild(bStep); bar.appendChild(bAll);}
+    bar.appendChild(bSol);
+    var ol=t.querySelector('ol.steps');
+    t.insertBefore(bar, ol||sol);
+    refresh();
+  });
+
+  // navigation + progress
+  var nav=document.getElementById('navlinks');
+  var sections=[].slice.call(document.querySelectorAll('section.topic'));
+  var counters=[];
+  sections.forEach(function(s){
+    var a=document.createElement('a'); a.href='#'+s.id;
+    var n=document.createElement('span'); n.textContent=s.getAttribute('data-title');
+    var c=document.createElement('span'); c.className='cnt';
+    a.appendChild(n); a.appendChild(c); nav.appendChild(a);
+    counters.push([s,c]);
+  });
+  function updateProgress(){
+    var tot=tasks.length, done=tasks.filter(function(t){return store[t.id];}).length;
+    document.getElementById('pbar').style.width=(tot?100*done/tot:0)+'%';
+    document.getElementById('ptext').textContent=done+' / '+tot+' nalog rešenih';
+    counters.forEach(function(p){
+      var ts=[].slice.call(p[0].querySelectorAll('.task'));
+      var d=ts.filter(function(t){return store[t.id];}).length;
+      p[1].textContent=d+'/'+ts.length; p[1].classList.toggle('full',d===ts.length&&ts.length>0);
+    });
+  }
+  updateProgress();
+
+  document.getElementById('reset').addEventListener('click',function(){
+    if(!confirm('Res želiš ponastaviti označene rešene naloge?'))return;
+    store={}; save(); tasks.forEach(function(t){t.classList.remove('is-done'); t.querySelector('.done input').checked=false;}); updateProgress();
+  });
+  document.getElementById('theme').addEventListener('click',function(){
+    var r=document.documentElement, cur=r.getAttribute('data-theme');
+    var dark=cur?cur==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    r.setAttribute('data-theme',dark?'light':'dark');
+    try{localStorage.setItem('mt-theme',r.getAttribute('data-theme'));}catch(e){}
+  });
+  try{var th=localStorage.getItem('mt-theme'); if(th) document.documentElement.setAttribute('data-theme',th);}catch(e){}
+
+  function renderMath(){
+    if(window.renderMathInElement){
+      renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+    }
+  }
+  if(document.readyState==='complete') renderMath(); else window.addEventListener('load',renderMath);
+})();
+</script>
+</body>
+</html>
