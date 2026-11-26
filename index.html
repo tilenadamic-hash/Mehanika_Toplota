@@ -53,6 +53,9 @@ h3{font-size:1.12rem;margin:26px 0 10px}
 .theory p,.theory li{max-width:75ch}
 .formulas{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
 .f{background:var(--formula);border:1px solid var(--border);border-radius:10px;padding:10px 12px;overflow-x:auto}
+.f .leg{font-size:.8rem;line-height:1.5;color:var(--muted);margin-top:8px;padding-top:6px;border-top:1px dashed var(--border)}
+.f.const{background:var(--accent-soft)}
+.f.const .leg{border-top:0;margin-top:0;padding-top:0;color:var(--text)}
 .f b{display:block;font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px}
 .task{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin:14px 0;transition:border-color .2s}
 .task.is-done{border-color:var(--ok)}
@@ -181,14 +184,14 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="met"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Enakomerno</b>\(s=vt\)</div>
-  <div class="f"><b>Enakomerno pospešeno</b>\(v=v_0+at\)<br>\(s=v_0t+\dfrac{at^2}{2}\)<br>\(v^2=v_0^2+2as\)</div>
-  <div class="f"><b>Prosti pad z višine h</b>\(t=\sqrt{\dfrac{2h}{g}},\ \ v=\sqrt{2gh}\)</div>
-  <div class="f"><b>Navpični met</b>\(v=v_0-gt,\ \ y=v_0t-\dfrac{gt^2}{2}\)<br>\(t_\text{vrh}=\dfrac{v_0}{g},\ \ h_\text{max}=\dfrac{v_0^2}{2g}\)</div>
-  <div class="f"><b>Vodoravni met</b>\(x=v_0t,\ \ y=h-\dfrac{gt^2}{2}\)<br>\(t_p=\sqrt{\dfrac{2h}{g}},\ \ D=v_0\sqrt{\dfrac{2h}{g}}\)</div>
-  <div class="f"><b>Poševni met</b>\(v_{0x}=v_0\cos\varphi,\ v_{0y}=v_0\sin\varphi\)<br>\(D=\dfrac{v_0^2\sin 2\varphi}{g}\)<br>\(y=x\tan\varphi-\dfrac{gx^2}{2v_0^2\cos^2\varphi}\)</div>
-  <div class="f"><b>Kroženje</b>\(v=\omega r,\ \ \omega=2\pi\nu=\dfrac{2\pi}{t_0}\)<br>\(a_r=\dfrac{v^2}{r}=\omega^2r,\ \ a_t=\alpha r\)</div>
-  <div class="f"><b>Enakomerno pospešeno kroženje</b>\(\omega=\omega_0+\alpha t\)<br>\(\varphi=\omega_0t+\dfrac{\alpha t^2}{2}\)<br>\(\omega^2=\omega_0^2+2\alpha\varphi\)</div>
+  <div class="f"><b>Enakomerno</b>\(s=vt\)<div class="leg">\(s\) pot [m] · \(v\) hitrost [m/s] · \(t\) čas [s]</div></div>
+  <div class="f"><b>Enakomerno pospešeno</b>\(v=v_0+at\)<br>\(s=v_0t+\dfrac{at^2}{2}\)<br>\(v^2=v_0^2+2as\)<div class="leg">\(v_0\) začetna hitrost · \(v\) hitrost ob času \(t\) [m/s] · \(a\) pospešek [m/s²] · \(s\) prepotovana pot [m]</div></div>
+  <div class="f"><b>Prosti pad z višine h</b>\(t=\sqrt{\dfrac{2h}{g}},\ \ v=\sqrt{2gh}\)<div class="leg">\(h\) višina [m] · \(g\) težni pospešek (9,81 m/s²) · \(t\) čas padanja · \(v\) hitrost ob tleh</div></div>
+  <div class="f"><b>Navpični met</b>\(v=v_0-gt,\ \ y=v_0t-\dfrac{gt^2}{2}\)<br>\(t_\text{vrh}=\dfrac{v_0}{g},\ \ h_\text{max}=\dfrac{v_0^2}{2g}\)<div class="leg">\(v_0\) začetna hitrost navzgor · \(y\) višina nad izhodiščem · \(t_\text{vrh}\) čas do najvišje lege · \(h_\text{max}\) največja višina</div></div>
+  <div class="f"><b>Vodoravni met</b>\(x=v_0t,\ \ y=h-\dfrac{gt^2}{2}\)<br>\(t_p=\sqrt{\dfrac{2h}{g}},\ \ D=v_0\sqrt{\dfrac{2h}{g}}\)<div class="leg">\(v_0\) začetna (vodoravna) hitrost · \(x\) vodoravna lega · \(y\) višina · \(h\) višina izstrelišča · \(t_p\) čas padanja · \(D\) domet [m]</div></div>
+  <div class="f"><b>Poševni met</b>\(v_{0x}=v_0\cos\varphi,\ v_{0y}=v_0\sin\varphi\)<br>\(D=\dfrac{v_0^2\sin 2\varphi}{g}\)<br>\(y=x\tan\varphi-\dfrac{gx^2}{2v_0^2\cos^2\varphi}\)<div class="leg">\(\varphi\) kot meta glede na vodoravnico · \(v_{0x},v_{0y}\) vodoravna in navpična komponenta začetne hitrosti · \(D\) domet · \(y(x)\) tir (parabola)</div></div>
+  <div class="f"><b>Kroženje</b>\(v=\omega r,\ \ \omega=2\pi\nu=\dfrac{2\pi}{t_0}\)<br>\(a_r=\dfrac{v^2}{r}=\omega^2r,\ \ a_t=\alpha r\)<div class="leg">\(\omega\) kotna hitrost [s⁻¹] · \(\nu\) frekvenca [Hz] · \(t_0\) obhodni čas [s] · \(r\) polmer [m] · \(v\) obodna hitrost · \(a_r\) radialni (centripetalni) pospešek · \(a_t\) tangentni pospešek · \(\alpha\) kotni pospešek [s⁻²]</div></div>
+  <div class="f"><b>Enakomerno pospešeno kroženje</b>\(\omega=\omega_0+\alpha t\)<br>\(\varphi=\omega_0t+\dfrac{\alpha t^2}{2}\)<br>\(\omega^2=\omega_0^2+2\alpha\varphi\)<div class="leg">\(\varphi\) zasuk [rad] · \(\omega_0\) začetna kotna hitrost · \(\alpha\) kotni pospešek · število obratov \(N=\varphi/2\pi\)</div></div>
 </div>
 
 <h3>Naloge</h3>
@@ -331,12 +334,12 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="klanec"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>2. Newtonov zakon</b>\(\sum\vec F=m\vec a=\dfrac{d\vec G}{dt}\)</div>
-  <div class="f"><b>Teža, vzmet</b>\(F_g=mg,\quad F=kx\)</div>
-  <div class="f"><b>Trenje / lepenje</b>\(F_{tr}=k_{tr}N,\quad F_l\le k_lN\)</div>
-  <div class="f"><b>Klanec</b>\(F_d=mg\sin\varphi,\ N=mg\cos\varphi\)<br>\(a=g(\sin\varphi-k_{tr}\cos\varphi)\)<br>mejni kot: \(\tan\varphi_m=k_l\)</div>
-  <div class="f"><b>Sistemska sila</b>\(\vec F_s=-m\vec a_0,\quad F_{cf}=m\omega^2r\)</div>
-  <div class="f"><b>Centripetalna sila</b>\(F_{cp}=m\dfrac{v^2}{r}=m\omega^2r\)</div>
+  <div class="f"><b>2. Newtonov zakon</b>\(\sum\vec F=m\vec a=\dfrac{d\vec G}{dt}\)<div class="leg">\(\sum\vec F\) vsota (rezultanta) vseh sil [N] · \(m\) masa [kg] · \(\vec a\) pospešek · \(\vec G\) gibalna količina [kg m/s]</div></div>
+  <div class="f"><b>Teža, vzmet</b>\(F_g=mg,\quad F=kx\)<div class="leg">\(F_g\) teža [N] · \(g\) težni pospešek · \(k\) koeficient vzmeti [N/m] · \(x\) raztezek vzmeti [m]</div></div>
+  <div class="f"><b>Trenje / lepenje</b>\(F_{tr}=k_{tr}N,\quad F_l\le k_lN\)<div class="leg">\(F_{tr}\) sila trenja (telo drsi) · \(F_l\) sila lepenja (telo miruje) · \(N\) normalna sila podlage · \(k_{tr}\) koeficient trenja · \(k_l\) koeficient lepenja (brez enot)</div></div>
+  <div class="f"><b>Klanec</b>\(F_d=mg\sin\varphi,\ N=mg\cos\varphi\)<br>\(a=g(\sin\varphi-k_{tr}\cos\varphi)\)<br>mejni kot: \(\tan\varphi_m=k_l\)<div class="leg">\(\varphi\) nagib klanca · \(F_d\) dinamična komponenta teže (vzdolž klanca) · \(N\) normalna sila · \(a\) pospešek drsenja navzdol · \(\varphi_m\) mejni kot zdrsa</div></div>
+  <div class="f"><b>Sistemska sila</b>\(\vec F_s=-m\vec a_0,\quad F_{cf}=m\omega^2r\)<div class="leg">\(\vec F_s\) sistemska (navidezna) sila · \(\vec a_0\) pospešek opazovalnega sistema · \(F_{cf}\) centrifugalna sila · \(\omega\) kotna hitrost vrtenja sistema · \(r\) oddaljenost od osi</div></div>
+  <div class="f"><b>Centripetalna sila</b>\(F_{cp}=m\dfrac{v^2}{r}=m\omega^2r\)<div class="leg">\(F_{cp}\) rezultanta sil proti središču kroženja · \(v\) obodna hitrost · \(r\) polmer kroženja · \(\omega\) kotna hitrost</div></div>
 </div>
 <h3>Naloge</h3>
 
@@ -435,10 +438,11 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="satelit"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Gravitacijska sila</b>\(F=G\dfrac{m_1m_2}{r^2}\)</div>
-  <div class="f"><b>Težni pospešek</b>\(g_0=G\dfrac{M}{R^2},\ \ g(h)=g_0\dfrac{R^2}{(R+h)^2}\)</div>
-  <div class="f"><b>Satelit</b>\(v^2=\dfrac{g_0R^2}{R+h}\)<br>\(t_0=\dfrac{2\pi r}{v},\ \ r^3=\dfrac{g_0R^2t_0^2}{4\pi^2}\)</div>
-  <div class="f"><b>Potencialna energija</b>\(W_p=-G\dfrac{Mm}{r}\)</div>
+  <div class="f"><b>Gravitacijska sila</b>\(F=G\dfrac{m_1m_2}{r^2}\)<div class="leg">\(G\) gravitacijska konstanta · \(m_1,m_2\) masi teles [kg] · \(r\) razdalja med središčema [m]</div></div>
+  <div class="f"><b>Težni pospešek</b>\(g_0=G\dfrac{M}{R^2},\ \ g(h)=g_0\dfrac{R^2}{(R+h)^2}\)<div class="leg">\(g_0\) težni pospešek na površju · \(M\) masa planeta · \(R\) polmer planeta · \(h\) višina nad površjem · \(g(h)\) težni pospešek na višini \(h\)</div></div>
+  <div class="f"><b>Satelit</b>\(v^2=\dfrac{g_0R^2}{R+h}\)<br>\(t_0=\dfrac{2\pi r}{v},\ \ r^3=\dfrac{g_0R^2t_0^2}{4\pi^2}\)<div class="leg">\(v\) hitrost satelita · \(r=R+h\) polmer tirnice (od središča planeta!) · \(t_0\) obhodni čas</div></div>
+  <div class="f"><b>Potencialna energija</b>\(W_p=-G\dfrac{Mm}{r}\)<div class="leg">\(W_p\) gravitacijska potencialna energija [J] (nič v neskončnosti) · \(m\) masa telesa · \(r\) razdalja od središča planeta</div></div>
+  <div class="f const"><b>Konstante</b><div class="leg">\(G=6{,}67\cdot10^{-11}\ \mathrm{N\,m^2/kg^2}\) gravitacijska konstanta<br>\(R_Z=6400\ \mathrm{km}\) polmer Zemlje<br>\(g_0=9{,}81\ \mathrm{m/s^2}\) težni pospešek na Zemlji<br>\(M_Z=6\cdot10^{24}\ \mathrm{kg}\) masa Zemlje</div></div>
 </div>
 <h3>Naloge</h3>
 
@@ -500,12 +504,12 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="trk"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Gibalna količina</b>\(G=mv,\ \ \int F\,dt=\Delta G\)</div>
-  <div class="f"><b>Energije</b>\(W_k=\dfrac{mv^2}{2},\ W_p=mgh,\ W_{pr}=\dfrac{kx^2}{2}\)</div>
-  <div class="f"><b>Delo, moč</b>\(A=\int\vec F\cdot d\vec s,\ \ P=\dfrac{dA}{dt}=Fv\)</div>
-  <div class="f"><b>Izrek o energiji</b>\(A_\text{ost}=\Delta W_k+\Delta W_p+\Delta W_{pr}\)</div>
-  <div class="f"><b>Neprožni trk</b>\(m_1v_1+m_2v_2=(m_1+m_2)v\)</div>
-  <div class="f"><b>Prožni trk</b>\(m_1v_1+m_2v_2=m_1v_1'+m_2v_2'\)<br>\(m_1v_1^2+m_2v_2^2=m_1v_1'^2+m_2v_2'^2\)</div>
+  <div class="f"><b>Gibalna količina</b>\(G=mv,\ \ \int F\,dt=\Delta G\)<div class="leg">\(G\) gibalna količina [kg m/s] · \(\int F\,dt\) sunek sile [N s] · \(\Delta G\) sprememba gibalne količine</div></div>
+  <div class="f"><b>Energije</b>\(W_k=\dfrac{mv^2}{2},\ W_p=mgh,\ W_{pr}=\dfrac{kx^2}{2}\)<div class="leg">\(W_k\) kinetična · \(W_p\) potencialna · \(W_{pr}\) prožnostna energija [J] · \(h\) višina · \(k\) koeficient vzmeti · \(x\) raztezek</div></div>
+  <div class="f"><b>Delo, moč</b>\(A=\int\vec F\cdot d\vec s,\ \ P=\dfrac{dA}{dt}=Fv\)<div class="leg">\(A\) delo [J] · \(d\vec s\) majhen premik · \(P\) moč [W] · \(v\) hitrost</div></div>
+  <div class="f"><b>Izrek o energiji</b>\(A_\text{ost}=\Delta W_k+\Delta W_p+\Delta W_{pr}\)<div class="leg">\(A_\text{ost}\) delo vseh sil razen teže in prožnosti (trenje, vlečna sila …) · \(\Delta\) sprememba (končna − začetna)</div></div>
+  <div class="f"><b>Neprožni trk</b>\(m_1v_1+m_2v_2=(m_1+m_2)v\)<div class="leg">\(m_1,m_2\) masi · \(v_1,v_2\) hitrosti pred trkom · \(v\) skupna hitrost po trku (telesi se sprimeta)</div></div>
+  <div class="f"><b>Prožni trk</b>\(m_1v_1+m_2v_2=m_1v_1'+m_2v_2'\)<br>\(m_1v_1^2+m_2v_2^2=m_1v_1'^2+m_2v_2'^2\)<div class="leg">\(v_1,v_2\) hitrosti pred trkom · \(v_1',v_2'\) hitrosti po trku — pazi na predznak (smer)!</div></div>
 </div>
 <h3>Naloge</h3>
 
@@ -585,13 +589,13 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="kotaljenje"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Navor</b>\(M=rF\sin\varphi=J\alpha\)</div>
-  <div class="f"><b>Vrtilna količina</b>\(\Gamma=J\omega,\ \ \int M\,dt=\Delta\Gamma\)</div>
-  <div class="f"><b>Vztrajnostni moment</b>\(J=\int r^2\,dm\)</div>
-  <div class="f"><b>Steinerjev izrek</b>\(J=J^*+ma^2\)</div>
-  <div class="f"><b>Rotacijska energija</b>\(W_r=\dfrac{J\omega^2}{2}=\dfrac{\Gamma\omega}{2}\)</div>
-  <div class="f"><b>Kotaljenje</b>\(v_T=\omega R\)<br>\(W_k=\dfrac{mv_T^2}{2}+\dfrac{J^*\omega^2}{2}\)</div>
-  <div class="f"><b>Delo, moč pri vrtenju</b>\(A=\int M\,d\varphi,\ \ P=M\omega\)</div>
+  <div class="f"><b>Navor</b>\(M=rF\sin\varphi=J\alpha\)<div class="leg">\(M\) navor [N m] · \(r\) ročica (razdalja od osi do prijemališča) · \(F\) sila · \(\varphi\) kot med \(\vec r\) in \(\vec F\) · \(J\) vztrajnostni moment · \(\alpha\) kotni pospešek [s⁻²]</div></div>
+  <div class="f"><b>Vrtilna količina</b>\(\Gamma=J\omega,\ \ \int M\,dt=\Delta\Gamma\)<div class="leg">\(\Gamma\) vrtilna količina [kg m²/s] · \(J\) vztrajnostni moment [kg m²] · \(\omega\) kotna hitrost [s⁻¹] · \(\int M\,dt\) sunek navora</div></div>
+  <div class="f"><b>Vztrajnostni moment</b>\(J=\int r^2\,dm\)<div class="leg">\(J\) vztrajnostni moment [kg m²] · \(dm\) majhen košček mase · \(r\) njegova razdalja od osi vrtenja</div></div>
+  <div class="f"><b>Steinerjev izrek</b>\(J=J^*+ma^2\)<div class="leg">\(J^*\) vztrajnostni moment okoli osi skozi težišče · \(m\) masa telesa · \(a\) razdalja med vzporednima osema</div></div>
+  <div class="f"><b>Rotacijska energija</b>\(W_r=\dfrac{J\omega^2}{2}=\dfrac{\Gamma\omega}{2}\)<div class="leg">\(W_r\) kinetična energija vrtenja [J] · \(J\) vztrajnostni moment · \(\omega\) kotna hitrost · \(\Gamma\) vrtilna količina</div></div>
+  <div class="f"><b>Kotaljenje</b>\(v_T=\omega R\)<br>\(W_k=\dfrac{mv_T^2}{2}+\dfrac{J^*\omega^2}{2}\)<div class="leg">\(v_T\) hitrost težišča · \(R\) polmer telesa · \(\omega\) kotna hitrost · \(J^*\) vztrajnostni moment okoli težišča</div></div>
+  <div class="f"><b>Delo, moč pri vrtenju</b>\(A=\int M\,d\varphi,\ \ P=M\omega\)<div class="leg">\(A\) delo [J] · \(\varphi\) zasuk [rad] · \(P\) moč [W]</div></div>
 </div>
 <h3>Naloge</h3>
 
@@ -683,14 +687,14 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="nihanje"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Rešitev</b>\(x=x_0\sin(\omega_0t+\delta)\)<br>\(\ddot x=-\omega_0^2x\)</div>
-  <div class="f"><b>Vijačna vzmet</b>\(t_0=2\pi\sqrt{\dfrac mk}\)</div>
-  <div class="f"><b>Polžasta vzmet</b>\(t_0=2\pi\sqrt{\dfrac JD}\)</div>
-  <div class="f"><b>Matematično nihalo</b>\(t_0=2\pi\sqrt{\dfrac lg}\)</div>
-  <div class="f"><b>Fizično nihalo</b>\(t_0=2\pi\sqrt{\dfrac{J}{mgr_T}}\)</div>
-  <div class="f"><b>Energija</b>\(W=\dfrac{kx_0^2}{2}=\dfrac{mv_0^2}{2}\)</div>
-  <div class="f"><b>Dušeno</b>\(x=x_0e^{-\beta t}\cos\omega t\)<br>\(\omega=\sqrt{\omega_0^2-\beta^2},\ \beta=\dfrac{\gamma}{2m}\)</div>
-  <div class="f"><b>Vsiljeno</b>\(x_0=\dfrac{F_0/m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}}\)</div>
+  <div class="f"><b>Rešitev</b>\(x=x_0\sin(\omega_0t+\delta)\)<br>\(\ddot x=-\omega_0^2x\)<div class="leg">\(x\) odmik iz ravnovesne lege · \(x_0\) amplituda · \(\omega_0\) lastna krožna frekvenca [s⁻¹] · \(\delta\) fazni zamik · \(\ddot x\) pospešek</div></div>
+  <div class="f"><b>Vijačna vzmet</b>\(t_0=2\pi\sqrt{\dfrac mk}\)<div class="leg">\(t_0\) nihajni čas [s] · \(m\) masa uteži · \(k\) koeficient vzmeti [N/m]</div></div>
+  <div class="f"><b>Polžasta vzmet</b>\(t_0=2\pi\sqrt{\dfrac JD}\)<div class="leg">\(J\) vztrajnostni moment nihala · \(D\) sučni (torzijski) koeficient vzmeti [N m/rad], \(M=-D\varphi\)</div></div>
+  <div class="f"><b>Matematično nihalo</b>\(t_0=2\pi\sqrt{\dfrac lg}\)<div class="leg">\(l\) dolžina vrvice (do središča uteži) · \(g\) težni pospešek · velja za majhne odmike</div></div>
+  <div class="f"><b>Fizično nihalo</b>\(t_0=2\pi\sqrt{\dfrac{J}{mgr_T}}\)<div class="leg">\(J\) vztrajnostni moment okoli osi vrtenja · \(m\) masa · \(r_T\) razdalja težišča od osi</div></div>
+  <div class="f"><b>Energija</b>\(W=\dfrac{kx_0^2}{2}=\dfrac{mv_0^2}{2}\)<div class="leg">\(W\) celotna energija nihanja · \(x_0\) amplituda · \(v_0=x_0\omega_0\) največja hitrost (v ravnovesni legi)</div></div>
+  <div class="f"><b>Dušeno</b>\(x=x_0e^{-\beta t}\cos\omega t\)<br>\(\omega=\sqrt{\omega_0^2-\beta^2},\ \beta=\dfrac{\gamma}{2m}\)<div class="leg">\(\beta\) koeficient dušenja [s⁻¹] · \(\gamma\) koeficient upora [kg/s], \(F_u=-\gamma v\) · \(\omega\) znižana krožna frekvenca</div></div>
+  <div class="f"><b>Vsiljeno</b>\(x_0=\dfrac{F_0/m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}}\)<div class="leg">\(F_0\) amplituda vsiljene sile · \(\omega\) krožna frekvenca vsiljevanja · \(\omega_0\) lastna krožna frekvenca · \(x_0\) amplituda nihanja</div></div>
 </div>
 <h3>Naloge</h3>
 
@@ -749,15 +753,15 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="venturi"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Hidrostatični tlak</b>\(p=p_0+\rho gh\)</div>
-  <div class="f"><b>Vzgon</b>\(F_{vzg}=\rho gV\)</div>
-  <div class="f"><b>Kontinuiteta</b>\(\Phi_V=Sv,\ \ S_1v_1=S_2v_2\)</div>
-  <div class="f"><b>Bernoulli</b>\(p+\dfrac{\rho v^2}{2}+\rho gh=\text{konst.}\)</div>
-  <div class="f"><b>Viskoznost</b>\(\dfrac FS=\eta\dfrac{dv}{dz}\)</div>
-  <div class="f"><b>Poiseuille</b>\(v(r)=\dfrac{\Delta p}{4\eta l}(R^2-r^2)\)<br>\(\Phi_V=\dfrac{\pi R^4\Delta p}{8\eta l}\)</div>
-  <div class="f"><b>Upor</b>\(F_u=6\pi\eta rv\)<br>\(F_u=\tfrac12c_u\rho Sv^2\)</div>
-  <div class="f"><b>Končna hitrost kroglice</b>\(v=\dfrac{2r^2g(\rho_0-\rho)}{9\eta}\)</div>
-  <div class="f"><b>Površinska napetost</b>\(\Delta p=\dfrac{2\gamma}{R},\ \ h=\dfrac{2\gamma\cos\theta}{\rho gr}\)</div>
+  <div class="f"><b>Hidrostatični tlak</b>\(p=p_0+\rho gh\)<div class="leg">\(p\) tlak [Pa] · \(p_0\) zunanji (zračni) tlak ≈ 1,013·10⁵ Pa · \(\rho\) gostota tekočine [kg/m³] · \(h\) globina [m]</div></div>
+  <div class="f"><b>Vzgon</b>\(F_{vzg}=\rho gV\)<div class="leg">\(F_{vzg}\) sila vzgona [N] · \(\rho\) gostota <em>tekočine</em> · \(V\) prostornina potopljenega dela telesa</div></div>
+  <div class="f"><b>Kontinuiteta</b>\(\Phi_V=Sv,\ \ S_1v_1=S_2v_2\)<div class="leg">\(\Phi_V\) volumski pretok [m³/s] · \(S\) presek cevi [m²] · \(v\) hitrost tekočine</div></div>
+  <div class="f"><b>Bernoulli</b>\(p+\dfrac{\rho v^2}{2}+\rho gh=\text{konst.}\)<div class="leg">\(p\) statični tlak · \(\rho v^2/2\) dinamični (zastojni) tlak · \(\rho gh\) hidrostatični člen · \(h\) višina točke</div></div>
+  <div class="f"><b>Viskoznost</b>\(\dfrac FS=\eta\dfrac{dv}{dz}\)<div class="leg">\(F\) strižna sila med plastmi · \(S\) ploščina plasti · \(\eta\) viskoznost [Pa s = kg/(m s)] · \(dv/dz\) sprememba hitrosti s pravokotno razdaljo</div></div>
+  <div class="f"><b>Poiseuille</b>\(v(r)=\dfrac{\Delta p}{4\eta l}(R^2-r^2)\)<br>\(\Phi_V=\dfrac{\pi R^4\Delta p}{8\eta l}\)<div class="leg">\(R\) notranji polmer cevi · \(r\) razdalja od osi cevi · \(l\) dolžina cevi · \(\Delta p\) razlika tlakov na koncih</div></div>
+  <div class="f"><b>Upor</b>\(F_u=6\pi\eta rv\)<br>\(F_u=\tfrac12c_u\rho Sv^2\)<div class="leg">linearni (Stokesov) zakon: \(r\) polmer kroglice · \(v\) hitrost; kvadratni zakon: \(c_u\) koeficient upora · \(S\) čelni presek telesa</div></div>
+  <div class="f"><b>Končna hitrost kroglice</b>\(v=\dfrac{2r^2g(\rho_0-\rho)}{9\eta}\)<div class="leg">\(\rho_0\) gostota kroglice · \(\rho\) gostota tekočine · \(r\) polmer kroglice · \(\eta\) viskoznost</div></div>
+  <div class="f"><b>Površinska napetost</b>\(\Delta p=\dfrac{2\gamma}{R},\ \ h=\dfrac{2\gamma\cos\theta}{\rho gr}\)<div class="leg">\(\gamma\) površinska napetost [N/m] · \(R\) polmer kapljice · \(\Delta p\) nadtlak v kapljici · \(\theta\) kontaktni kot · \(r\) polmer kapilare · \(h\) kapilarni dvig</div></div>
 </div>
 <h3>Naloge</h3>
 
@@ -863,10 +867,10 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="struna"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Valovanje</b>\(c=\lambda\nu=\dfrac\omega k\)<br>\(y=A\sin(\omega t-kx)\)</div>
-  <div class="f"><b>Struna</b>\(c=\sqrt{\dfrac F\mu}\)<br>\(\nu_n=\dfrac{nc}{2L}\)</div>
-  <div class="f"><b>Zvok</b>\(c=\sqrt{\dfrac E\rho},\ \ c=\sqrt{\dfrac{\kappa RT}{M}}\)</div>
-  <div class="f"><b>Doppler</b>\(\nu=\dfrac{\nu_0}{1\mp v_i/c},\ \ \nu=\nu_0\Big(1\pm\dfrac{v_o}{c}\Big)\)</div>
+  <div class="f"><b>Valovanje</b>\(c=\lambda\nu=\dfrac\omega k\)<br>\(y=A\sin(\omega t-kx)\)<div class="leg">\(c\) hitrost valovanja · \(\lambda\) valovna dolžina [m] · \(\nu\) frekvenca [Hz] · \(\omega=2\pi\nu\) krožna frekvenca · \(k=2\pi/\lambda\) valovno število · \(A\) amplituda</div></div>
+  <div class="f"><b>Struna</b>\(c=\sqrt{\dfrac F\mu}\)<br>\(\nu_n=\dfrac{nc}{2L}\)<div class="leg">\(F\) sila, s katero je struna napeta · \(\mu\) masa na enoto dolžine [kg/m] · \(L\) dolžina strune · \(n=1,2,3\ldots\) red lastnega nihanja</div></div>
+  <div class="f"><b>Zvok</b>\(c=\sqrt{\dfrac E\rho},\ \ c=\sqrt{\dfrac{\kappa RT}{M}}\)<div class="leg">\(E\) prožnostni (Youngov) modul [Pa] · \(\rho\) gostota · \(\kappa\) razmerje specifičnih toplot · \(R\) plinska konstanta · \(T\) temperatura [K] · \(M\) molska masa [kg/mol]</div></div>
+  <div class="f"><b>Doppler</b>\(\nu=\dfrac{\nu_0}{1\mp v_i/c},\ \ \nu=\nu_0\Big(1\pm\dfrac{v_o}{c}\Big)\)<div class="leg">\(\nu_0\) frekvenca izvora · \(\nu\) zaznana frekvenca · \(v_i\) hitrost izvora · \(v_o\) hitrost opazovalca · \(c\) hitrost zvoka · zgornji znak: približevanje</div></div>
 </div>
 <h3>Naloge</h3>
 <article class="task" id="t-x-struna">
@@ -903,14 +907,15 @@ th{background:var(--surface2)}
 <div class="viz" data-viz="pv"></div>
 <h3>Formule</h3>
 <div class="formulas">
-  <div class="f"><b>Plinska enačba</b>\(pV=nRT=\dfrac mMRT\)</div>
-  <div class="f"><b>1. zakon</b>\(\Delta W_n=A+Q,\ \ A=-\int p\,dV\)</div>
-  <div class="f"><b>Notranja energija</b>\(\Delta W_n=mc_v\Delta T\)</div>
-  <div class="f"><b>Izotermno delo</b>\(A=-p_1V_1\ln\dfrac{V_2}{V_1}\)</div>
-  <div class="f"><b>Adiabata</b>\(pV^\kappa=\text{konst.},\ TV^{\kappa-1}=\text{konst.}\)</div>
-  <div class="f"><b>Izkoristek</b>\(\eta=\dfrac{|A|}{Q_\text{dov}},\ \eta_C=1-\dfrac{T_2}{T_1}\)</div>
-  <div class="f"><b>Prevajanje</b>\(P=\lambda S\dfrac{\Delta T}{d}\)</div>
-  <div class="f"><b>Raztezanje</b>\(\Delta l=\alpha l\Delta T,\ \Delta V=\beta V\Delta T\)</div>
+  <div class="f"><b>Plinska enačba</b>\(pV=nRT=\dfrac mMRT\)<div class="leg">\(p\) tlak [Pa] · \(V\) prostornina [m³] · \(n\) število molov · \(T\) absolutna temperatura [K] · \(m\) masa plina · \(M\) molska masa [kg/mol]</div></div>
+  <div class="f"><b>1. zakon</b>\(\Delta W_n=A+Q,\ \ A=-\int p\,dV\)<div class="leg">\(\Delta W_n\) sprememba notranje energije · \(A\) delo, ki ga plin <em>prejme</em> · \(Q\) toplota, ki jo plin prejme</div></div>
+  <div class="f"><b>Notranja energija</b>\(\Delta W_n=mc_v\Delta T\)<div class="leg">\(c_v\) specifična toplota pri stalni prostornini [J/(kg K)] · \(\Delta T\) sprememba temperature</div></div>
+  <div class="f"><b>Izotermno delo</b>\(A=-p_1V_1\ln\dfrac{V_2}{V_1}\)<div class="leg">\(p_1,V_1\) začetni tlak in prostornina · \(V_2\) končna prostornina · \(p_1V_1=nRT\)</div></div>
+  <div class="f"><b>Adiabata</b>\(pV^\kappa=\text{konst.},\ TV^{\kappa-1}=\text{konst.}\)<div class="leg">\(\kappa=c_p/c_v\) razmerje specifičnih toplot (5/3 enoatomni, 7/5 dvoatomni plin)</div></div>
+  <div class="f"><b>Izkoristek</b>\(\eta=\dfrac{|A|}{Q_\text{dov}},\ \eta_C=1-\dfrac{T_2}{T_1}\)<div class="leg">\(\eta\) izkoristek · \(Q_\text{dov}\) dovedena toplota · \(T_1\) temperatura toplega · \(T_2\) hladnega rezervoarja [K] · \(\eta_C\) Carnotov izkoristek</div></div>
+  <div class="f"><b>Prevajanje</b>\(P=\lambda S\dfrac{\Delta T}{d}\)<div class="leg">\(P\) toplotni tok [W] · \(\lambda\) toplotna prevodnost [W/(m K)] · \(S\) ploščina · \(d\) debelina plasti · \(\Delta T\) razlika temperatur</div></div>
+  <div class="f"><b>Raztezanje</b>\(\Delta l=\alpha l\Delta T,\ \Delta V=\beta V\Delta T\)<div class="leg">\(\alpha\) linearni · \(\beta=3\alpha\) prostorninski razteznostni koeficient [K⁻¹] · \(l\) dolžina · \(V\) prostornina</div></div>
+  <div class="f const"><b>Konstante</b><div class="leg">\(R=8{,}314\ \mathrm{J/(mol\,K)}\) splošna plinska konstanta<br>\(k=1{,}38\cdot10^{-23}\ \mathrm{J/K}\) Boltzmannova konstanta<br>\(N_A=6{,}02\cdot10^{23}\ \mathrm{mol^{-1}}\) Avogadrovo število<br>\(T[\mathrm K]=t[^\circ\mathrm C]+273{,}15\)</div></div>
 </div>
 <h3>Naloge</h3>
 
