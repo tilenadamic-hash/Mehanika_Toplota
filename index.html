@@ -9,21 +9,21 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
 :root{
-  --bg:#f7f6f2; --surface:#ffffff; --surface2:#f0eee8; --text:#1d1d1f; --muted:#5f6068;
-  --border:#dedbd2; --accent:#2f5bd3; --accent-soft:#e6ecfb; --ok:#1f7a4a; --ok-soft:#e3f3ea;
-  --bad:#b3261e; --bad-soft:#fbe7e6; --warn:#8a5a00; --warn-soft:#fbf0d9; --formula:#fbfaf7;
+  --bg:#f3ecdc; --surface:#fbf6ea; --surface2:#ece2cc; --text:#2e2820; --muted:#6b604f;
+  --border:#ddd0b4; --accent:#a3471f; --accent-soft:#f3e0cc; --ok:#2e6b3a; --ok-soft:#e1ecd3;
+  --bad:#a62a1e; --bad-soft:#f6ddd3; --warn:#86580a; --warn-soft:#f5e6c4; --formula:#fdf9ef;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#15161a; --surface:#1e2026; --surface2:#262931; --text:#e9e9ee; --muted:#a3a5ae;
-    --border:#33363f; --accent:#8aa8ff; --accent-soft:#232b44; --ok:#6fd39c; --ok-soft:#1b3127;
-    --bad:#ff8f87; --bad-soft:#3a1f1e; --warn:#f0c46b; --warn-soft:#352a16; --formula:#1a1c21;
+    --bg:#1d1a16; --surface:#26221c; --surface2:#302b23; --text:#ede5d5; --muted:#b2a78f;
+    --border:#40382c; --accent:#f0a06e; --accent-soft:#3d2a1d; --ok:#8fcf8a; --ok-soft:#22301f;
+    --bad:#ff958a; --bad-soft:#3d221d; --warn:#f0c46b; --warn-soft:#382c17; --formula:#221f1a;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#15161a; --surface:#1e2026; --surface2:#262931; --text:#e9e9ee; --muted:#a3a5ae;
-  --border:#33363f; --accent:#8aa8ff; --accent-soft:#232b44; --ok:#6fd39c; --ok-soft:#1b3127;
-  --bad:#ff8f87; --bad-soft:#3a1f1e; --warn:#f0c46b; --warn-soft:#352a16; --formula:#1a1c21;
+  --bg:#1d1a16; --surface:#26221c; --surface2:#302b23; --text:#ede5d5; --muted:#b2a78f;
+  --border:#40382c; --accent:#f0a06e; --accent-soft:#3d2a1d; --ok:#8fcf8a; --ok-soft:#22301f;
+  --bad:#ff958a; --bad-soft:#3d221d; --warn:#f0c46b; --warn-soft:#382c17; --formula:#221f1a;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:16px}
@@ -355,7 +355,7 @@ th{background:var(--surface2)}
     </g>
     <circle cx="108" cy="98" r="9" fill="currentColor"/>
     <text x="146" y="70" font-size="13" fill="currentColor">α</text><text x="84" y="102" font-size="12" fill="currentColor">mᵤ</text>
-    <g stroke="#2f5bd3" stroke-width="2.5" fill="#2f5bd3"><line x1="240" y1="80" x2="290" y2="80"/><path d="M290 80 l-9 -5 v10z"/></g>
+    <g stroke-width="2.5" style="stroke:var(--accent);fill:var(--accent)"><line x1="240" y1="80" x2="290" y2="80"/><path d="M290 80 l-9 -5 v10z"/></g>
     <text x="252" y="72" font-size="13" fill="currentColor">a₀</text>
   </svg></figure></div>
   <ol class="steps">
@@ -408,7 +408,7 @@ th{background:var(--surface2)}
       <g transform="translate(97.9 105) rotate(-30)"><text x="8" y="-14">2 kg</text></g>
       <g transform="translate(193.2 50) rotate(-30)"><text x="8" y="-14">5 kg</text></g>
     </g>
-    <g stroke="#2f5bd3" fill="#2f5bd3" stroke-width="2.5"><line x1="222.3" y1="12.4" x2="260" y2="-9.4"/><path d="M265.6 -12.6 L259.4 -3.3 L254.4 -11.9 Z"/></g>
+    <g stroke-width="2.5" style="stroke:var(--accent);fill:var(--accent)"><line x1="222.3" y1="12.4" x2="260" y2="-9.4"/><path d="M265.6 -12.6 L259.4 -3.3 L254.4 -11.9 Z"/></g>
     <text x="246" y="-20" font-size="13" fill="currentColor">70 N</text><text x="68" y="144" font-size="13" fill="currentColor">30°</text>
   </svg></figure></div>
   <div class="checks" data-checks='[["pospešek a",3.396,"m/s²"],["napetost T",20.0,"N"]]'></div>
@@ -809,9 +809,9 @@ th{background:var(--surface2)}
       <path d="M10 120 H120 L150 128 H190 L220 120 H330"/><path d="M10 150 H120 L150 142 H190 L220 150 H330"/>
       <path d="M55 120 V20 M70 120 V20"/><path d="M163 128 V20 M177 128 V20"/><path d="M270 120 V20 M285 120 V20"/>
     </g>
-    <rect x="56" y="70" width="13" height="50" fill="#2f5bd3" opacity=".7"/>
-    <rect x="164" y="98" width="12" height="30" fill="#2f5bd3" opacity=".7"/>
-    <rect x="271" y="52" width="13" height="68" fill="#2f5bd3" opacity=".7"/>
+    <rect x="56" y="70" width="13" height="50" style="fill:var(--accent)" opacity=".7"/>
+    <rect x="164" y="98" width="12" height="30" style="fill:var(--accent)" opacity=".7"/>
+    <rect x="271" y="52" width="13" height="68" style="fill:var(--accent)" opacity=".7"/>
     <text x="38" y="14" font-size="12" fill="currentColor">levi</text><text x="150" y="14" font-size="12" fill="currentColor">srednji</text><text x="262" y="14" font-size="12" fill="currentColor">desni</text>
   </svg></figure></div>
   <ol class="steps">
@@ -926,7 +926,7 @@ th{background:var(--surface2)}
     <g fill="none" stroke="currentColor" stroke-width="2">
       <path d="M30 150 V10 M30 150 H245"/><path d="M50 20 Q90 110 230 128"/>
     </g>
-    <path d="M70 61 Q110 116 140 117 V150 H70 Z" fill="#2f5bd3" opacity=".18"/>
+    <path d="M70 61 Q110 116 140 117 V150 H70 Z" style="fill:var(--accent)" opacity=".18"/>
     <g stroke="currentColor" stroke-dasharray="4 4"><line x1="70" y1="61" x2="70" y2="150"/><line x1="140" y1="117" x2="140" y2="150"/></g>
     <circle cx="70" cy="61" r="4" fill="currentColor"/><circle cx="140" cy="117" r="4" fill="currentColor"/>
     <g font-size="13" fill="currentColor"><text x="12" y="16">p</text><text x="236" y="166">V</text><text x="64" y="166">V₁</text><text x="134" y="166">V₂</text><text x="76" y="58">1</text><text x="146" y="112">2</text></g>
